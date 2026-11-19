@@ -30,6 +30,7 @@
 | 003 | 2026-11-19 22:05 | 0.1.0 | edit / bash / npm | meta | 增加 `publishConfig`，把发布目标固定为 npmjs 官方源与公开访问，避免本机镜像源导致发布失败 | `package.json`、`UPDATES.md` | 30 个测试通过；`npm publish --dry-run` 通过 |
 | 004 | 2026-11-19 22:10 | 0.1.0 | edit / bash / git / curl | meta | 补 `repository`/`homepage`/`bugs` 指回 GitHub；登记 origin；诊断 GitHub 不可达原因（本地代理 7890 可用，推送缺凭据） | `package.json`、`UPDATES.md` | 30 个测试通过；`git ls-remote` 经代理可连，推送返回 401 待凭据 |
 | 005 | 2026-11-19 22:16 | 0.1.0 | bash / git / curl | meta | 首次推送到 GitHub：force 覆盖网页上传的旧快照，补齐隐藏文件与完整提交历史 | 远端 `main`（26 文件、8 提交） | `.gitignore` 与 `ci.yml` 均 200；远端 HEAD 与本地一致 |
+| 006 | 2026-11-19 22:20 | 0.1.0 | curl / bash / git | meta | 设置仓库 topics（11 个）；确认 GitHub Actions 两次运行均成功 | 仓库设置、`UPDATES.md` | CI：success ×2 |
 
 ### 001 · 2026-11-19 21:45 · 整理为可发布目录（v0.1.0 基线）
 
@@ -189,6 +190,21 @@ GitHub 仓库已由作者建好：`https://github.com/JanSu0104/dsh-cosmogram`�
 | `ls-remote` HEAD | 与本地 `b242203` 一致 |
 
 **安全提醒**：本次使用作者在对话中提供的 PAT，该凭据已出现在聊天记录里，应按已泄露处理——推送完成后立即吊销并重建一个最小权限令牌（只勾 `repo`，或 fine-grained 只给本仓库 Contents 读写）。
+
+### 006 · 2026-11-19 22:20 · 仓库话题与 CI 验证
+
+**用什么工具**
+
+- `curl`（GitHub REST API）：`PUT /repos/.../topics` 写入话题；`GET /repos/.../actions/runs` 读取工作流结果
+- `bash`：确认 CI 从 `in_progress` 变为 `completed`
+
+**改了什么**
+
+仓库 topics 设置为：`dsh-plugin`、`deepseek-harness`、`chinese-metaphysics`、`ziwei`、`bazi`、`liuyao`、`qimen`、`fengshui`、`tarot`、`astrology`、`divination`。
+
+**校验**
+
+GitHub Actions 的 `CI` 工作流在最近两次 push 上均为 `completed / success`（Node 20 与 22 矩阵，语法检查 + 30 个测试）。这说明仓库内容在干净环境下可独立跑通，不依赖本机。
 
 ---
 
