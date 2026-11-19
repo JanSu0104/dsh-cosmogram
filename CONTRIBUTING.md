@@ -19,7 +19,7 @@ Tests use `node:test` and need no install step. They run on Node 20 and 22 in CI
 
 ## Adding a system
 
-1. Add an entry to `SYSTEM_SPECS` in `lib/intake.js`: `id`, `label`, `en`, `aliases`, `required` (each with `key`, `label`, `question`, `check`), `optional`, `scope`.
+1. Add an entry to `SYSTEM_SPECS` in `lib/intake.js`: `id`, `label`, `en`, `aliases`, `required` (each with `key`, `label`, `question`, `check`), `recommended` (same shape; reported as optional suggestions), `optional`, `scope`.
 2. Mirror it in `prompts/suanming.spec.json` — the parity test fails until the labels match.
 3. Document it in `references/systems.md` with the five fixed blocks: minimum data, reading order, term-to-plain-language, can/cannot answer, follow-up directions.
 4. Update the minimum-data table in `README.md` and `README.zh.md`.

@@ -6,7 +6,7 @@ It covers **紫微斗数 / 八字四柱 / 六爻 / 奇门遁甲 / 风水 / 塔�
 
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](package.json)
-[![tests](https://img.shields.io/badge/tests-26%20passing-brightgreen.svg)](test/)
+[![tests](https://img.shields.io/badge/tests-30%20passing-brightgreen.svg)](test/)
 
 > 中文说明见 [README.zh.md](README.zh.md)。
 
@@ -40,15 +40,17 @@ The tool contains no astrology: it is a checklist plus template builder, so it c
 
 | System | Minimum material it needs |
 | --- | --- |
-| 紫微斗数 | 十二宫 (at least 命宫/身宫/财帛/官禄/夫妻/福德) + 主星辅星 + 生年四化 + gender |
-| 八字四柱 | year, month, day, hour pillars (干支); gender, 大运 and current year help |
-| 六爻 | 本卦 and 变卦, 动爻, 月建/日辰 (or exact casting time), the single question |
-| 奇门遁甲 | 阴阳遁 + 局数, 九宫盘 (八门/九星/八神/三奇六仪), matter and time |
-| 风水 | 坐向/朝向 + 户型 layout + doors and functional rooms; compass degrees help |
+| 紫微斗数 | 十二宫 (at least 命宫 and five named palaces) + 3+ main stars + 生年四化; gender and 大限 make it fuller |
+| 八字四柱 | all four pillars (干支); gender, 大运 and current year make it fuller |
+| 六爻 | 本卦 and 变卦, 动爻, 月建/日辰 (or exact casting time); the question is passed separately |
+| 奇门遁甲 | 阴阳遁 + 局数, 九宫盘 (八门/九星/八神/三奇六仪); 值符/值使 make it fuller |
+| 风水 | 坐向/朝向 + 户型 layout + doors and functional rooms; compass degrees make it fuller |
 | 塔罗 | spread name and position meanings + card names + upright/reversed |
-| 星座星盘 | birth date/time/place + planets in signs + houses (Ascendant); aspects help |
+| 星座星盘 | planets in signs + houses (Ascendant); aspects make it fuller |
 | 姓名学 | name characters + stroke-count authority (traditional/simplified) + 三才五格 or 五行/字义 |
-| 择日 | the matter + a date window + the principal person's info |
+| 择日 | the matter + a date window; the principal person's info makes it fuller |
+
+`suanming_intake` enforces the minimums and reports "make it fuller" items separately, so an optional detail never blocks a first reading.
 
 If only a birth time is given, the assistant says it does not cast charts, lists the minimum material above, and asks for the missing data.
 
@@ -116,10 +118,10 @@ lib/skill.js          suanming skill registration
 assets/suanming.md    skill body (the reading contract)
 references/           per-system guide, output examples, safety rules
 prompts/              portable prompt pack for other communities
-test/                 26 tests: intake logic, manifest, registration
+test/                 30 tests: intake logic, manifest, registration
 cordis.patch.yml      bundle patch
 locale/{en,zh}.json   Plugin Manager title/description
-icon.svg              original artwork (trigram mark)
+icon.svg              original artwork (three-line trigram inside a ring)
 ```
 
 ### Adding a system

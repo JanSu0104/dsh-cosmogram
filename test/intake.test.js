@@ -54,6 +54,30 @@ test('a full four-pillar chart is accepted', () => {
   assert.deepEqual(result.missing, [])
 })
 
+test('a four-pillar paste is auto-detected even though it has one required check', () => {
+  const result = analyzeIntake({ chartData: '年柱甲子 月柱丙寅 日柱戊午 时柱庚申', topic: '事业' })
+  assert.equal(result.status, 'ready')
+  assert.deepEqual(result.systems, ['bazi'])
+  assert.equal(result.detected, '八字四柱')
+})
+
+test('optional evidence is reported as a gap, not as a blocker', () => {
+  const result = analyzeIntake({ systems: ['紫微斗数'], chartData: ZIWEI_CHART })
+  assert.equal(result.status, 'ready')
+  assert.deepEqual(result.missing, [])
+  assert.ok(result.gaps.some(item => item.includes('性别')))
+  assert.match(result.scaffold, /可补充/)
+  assert.match(result.scaffold, /现有数据可做初步解读/)
+})
+
+test('need_data never returns a ready-looking seven-section scaffold', () => {
+  const result = analyzeIntake({})
+  assert.equal(result.status, 'need_data')
+  assert.doesNotMatch(result.scaffold, /## 2\. 关键信息摘要/)
+  assert.match(result.scaffold, /数据不足/)
+  assert.doesNotMatch(result.scaffold, /核心判断/)
+})
+
 test('the system is detected from the supplied material when omitted', () => {
   assert.equal(detectSystem(TAROT_SPREAD)?.id, 'tarot')
   const result = analyzeIntake({ chartData: TAROT_SPREAD, topic: '近期运势' })
@@ -67,6 +91,15 @@ test('the scaffold always carries the seven sections', () => {
   const headings = result.scaffold.match(/^## \d\. /gm) ?? []
   assert.equal(headings.length, 7)
   assert.match(result.scaffold, /边界提示/)
+})
+
+test('the scaffold states how the system was chosen', () => {
+  const explicit = analyzeIntake({ systems: ['八字'], chartData: '年柱甲子 月柱丙寅 日柱戊午 时柱庚申' })
+  assert.match(explicit.scaffold, /选择依据：用户指定该体系/)
+
+  const detected = analyzeIntake({ chartData: TAROT_SPREAD })
+  assert.match(detected.scaffold, /选择依据：根据数据特征判断/)
+  assert.match(detected.scaffold, /塔罗：命中 \d+ 项关键要素/)
 })
 
 test('mixed material keeps systems separate and does not merge them', () => {
@@ -93,10 +126,11 @@ test('aliases resolve to canonical ids and unknown names stay undefined', () => 
   assert.equal(normalizeSystem(42), undefined)
 })
 
-test('every system declares required evidence and a scope', () => {
+test('every system declares required evidence, optional evidence and a scope', () => {
   assert.equal(SYSTEM_SPECS.length, 9)
   for (const spec of SYSTEM_SPECS) {
     assert.ok(spec.required.length >= 1, `${spec.id} has required evidence`)
+    assert.ok(Array.isArray(spec.recommended), `${spec.id} declares recommended evidence`)
     assert.ok(spec.scope.length > 0, `${spec.id} declares its scope`)
     assert.ok(spec.label.length > 0)
   }
