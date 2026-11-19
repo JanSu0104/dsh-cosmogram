@@ -4,13 +4,13 @@ This folder lets any LLM community use the same contract without DeepSeek Harnes
 
 | File | Use |
 | --- | --- |
-| `suanming.prompt.md` | Paste as the system prompt / custom instructions / Project instructions for ChatGPT, Claude, Gemini, DeepSeek, Qwen, Kimi, or a local model. |
-| `suanming.spec.json` | Machine-readable list of the nine systems and their minimum required data, for building your own validator or agent tool. |
+| `cosmogram.prompt.md` | Paste as the system prompt / custom instructions / Project instructions for ChatGPT, Claude, Gemini, DeepSeek, Qwen, Kimi, or a local model. |
+| `cosmogram.spec.json` | Machine-readable list of the nine systems and their minimum required data, for building your own validator or agent tool. |
 
 ## How to use
 
 1. Open the model's custom-instruction surface (ChatGPT: Custom instructions or a Project; Claude: Project instructions or a Style; Gemini: Gem; DeepSeek: a new chat with the prompt pasted first).
-2. Paste the **entire** content of `suanming.prompt.md`.
+2. Paste the **entire** content of `cosmogram.prompt.md`.
 3. Provide chart data in this shape:
 
 ```
@@ -25,8 +25,8 @@ This folder lets any LLM community use the same contract without DeepSeek Harnes
 
 The DSH bundle adds two things a raw prompt cannot guarantee:
 
-- a `suanming` skill, so the contract is loaded only when a reading is requested;
-- a `suanming_intake` tool, so "is the data complete?" and "which questions must I ask?" are answered deterministically instead of by model judgement.
+- a `cosmogram` skill, so the contract is loaded only when a reading is requested;
+- a `cosmogram_intake` tool, so "is the data complete?" and "which questions must I ask?" are answered deterministically instead of by model judgement.
 
 ## License
 

@@ -1,5 +1,5 @@
 {
-  "name": "dsh-suanming",
+  "name": "dsh-cosmogram",
   "version": "0.1.0",
   "description": "Traditional Chinese metaphysics and divination reading assistant for DeepSeek Harness: interprets user-supplied charts across nine systems, never casts them.",
   "type": "module",
@@ -35,6 +35,7 @@
     "dsh-plugin",
     "deepseek-harness",
     "chinese-metaphysics",
+    "cosmogram",
     "ziwei",
     "bazi",
     "liuyao",

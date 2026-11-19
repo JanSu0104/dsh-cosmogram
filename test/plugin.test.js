@@ -26,7 +26,7 @@ test('apply registers one model-invocable skill and one tool', () => {
   assert.equal(fake.tools.length, 1)
 
   const [skill] = fake.skills
-  assert.equal(skill.name, 'suanming')
+  assert.equal(skill.name, 'cosmogram')
   assert.equal(skill.invocation.modelInvocable, true)
   assert.ok(skill.content.includes('不排盘'))
   assert.equal(skill.resourceBase.kind, 'directory')
@@ -37,7 +37,7 @@ test('the tool exposes the documented schema and output contract', () => {
   const fake = fakeContext()
   apply(fake.ctx)
   const [tool] = fake.tools
-  assert.equal(tool.name, 'suanming_intake')
+  assert.equal(tool.name, 'cosmogram_intake')
   assert.equal(typeof tool.output.render, 'function')
   assert.equal(tool.parameters.type, 'object')
   assert.deepEqual(tool.parameters.properties.systems.items.enum.slice(0, 3), ['紫微斗数', '八字四柱', '六爻'])

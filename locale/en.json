@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Suanming reading assistant",
+    "title": "Cosmogram",
     "description": "Reads the Zi Wei Dou Shu, BaZi, Liu Yao, Qi Men, Feng Shui, Tarot, natal-chart, name or date-selection material you paste, in a fixed seven-section answer. It never casts a chart or invents stars, hexagrams, cards or positions; when the material is incomplete it asks for the missing pieces instead of guessing. Start a reading by pasting the chart together with your question and topic."
   }
 }

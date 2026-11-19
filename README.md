@@ -1,4 +1,4 @@
-# dsh-suanming · 命理解读助手
+# Cosmogram · 命理解读助手
 
 A traditional Chinese metaphysics and divination reading assistant for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) — and a portable prompt pack for any other LLM.
 
@@ -26,8 +26,8 @@ A **reading** assistant, not a chart generator. It interprets chart material you
 
 ## Two capabilities in the DSH bundle
 
-1. **`suanming` skill** — loaded only when a reading is requested. It carries the reading contract, the seven-section output structure, the interpretation order for all nine systems, term-to-plain-language notes, tone rules and safety boundaries.
-2. **`suanming_intake` tool** — a deterministic pre-check. Give it the pasted chart material; it returns:
+1. **`cosmogram` skill** — loaded only when a reading is requested. It carries the reading contract, the seven-section output structure, the interpretation order for all nine systems, term-to-plain-language notes, tone rules and safety boundaries.
+2. **`cosmogram_intake` tool** — a deterministic pre-check. Give it the pasted chart material; it returns:
    - `status: ready | need_data`;
    - which minimum elements are present and which are missing;
    - the exact follow-up questions to ask (never a guessed chart);
@@ -50,7 +50,7 @@ The tool contains no astrology: it is a checklist plus template builder, so it c
 | 姓名学 | name characters + stroke-count authority (traditional/simplified) + 三才五格 or 五行/字义 |
 | 择日 | the matter + a date window; the principal person's info makes it fuller |
 
-`suanming_intake` enforces the minimums and reports "make it fuller" items separately, so an optional detail never blocks a first reading.
+`cosmogram_intake` enforces the minimums and reports "make it fuller" items separately, so an optional detail never blocks a first reading.
 
 If only a birth time is given, the assistant says it does not cast charts, lists the minimum material above, and asks for the missing data.
 
@@ -60,7 +60,7 @@ The bundle is a dependency-free Host-only plugin: `index.js`, a patch, locales, 
 
 **From the Web GUI:** open **Plugins** → **Add plugin** → choose this directory.
 
-**From an agent session:** call `plugin_manager` with `action: "install_bundle"` and the absolute directory of this package, then enable the `suanming` row if it arrives disabled.
+**From an agent session:** call `plugin_manager` with `action: "install_bundle"` and the absolute directory of this package, then enable the `cosmogram` row if it arrives disabled.
 
 A local directory install links this checkout, so edits show up after the plugin reloads. It changes the profile, so it affects every session in that profile; remove the bundle to undo it.
 
@@ -74,7 +74,7 @@ A local directory install links this checkout, so edits show up after the plugin
 补充：最近想换工作，适不适合？
 ```
 
-The assistant calls `suanming_intake`, asks for anything missing, then answers in:
+The assistant calls `cosmogram_intake`, asks for anything missing, then answers in:
 
 1. 当前使用的体系与数据来源
 2. 关键信息摘要
@@ -88,8 +88,8 @@ The assistant calls `suanming_intake`, asks for anything missing, then answers i
 
 `prompts/` keeps the same contract usable anywhere:
 
-- `prompts/suanming.prompt.md` — paste as system prompt / custom instructions / Project instructions in ChatGPT, Claude, Gemini, DeepSeek, Qwen, Kimi or a local model;
-- `prompts/suanming.spec.json` — machine-readable list of the nine systems and their minimum evidence, if you want to build your own validator;
+- `prompts/cosmogram.prompt.md` — paste as system prompt / custom instructions / Project instructions in ChatGPT, Claude, Gemini, DeepSeek, Qwen, Kimi or a local model;
+- `prompts/cosmogram.spec.json` — machine-readable list of the nine systems and their minimum evidence, if you want to build your own validator;
 - `prompts/README.md` — usage notes and the difference from the DSH bundle.
 
 ## Safety and scope
@@ -113,9 +113,9 @@ npm run check   # syntax check of every runtime module
 ```
 index.js              plugin entry: registers skill + tool
 lib/intake.js         dependency-free validation, detection, scaffold
-lib/tool.js           suanming_intake tool definition
-lib/skill.js          suanming skill registration
-assets/suanming.md    skill body (the reading contract)
+lib/tool.js           cosmogram_intake tool definition
+lib/skill.js          cosmogram skill registration
+assets/cosmogram.md    skill body (the reading contract)
 references/           per-system guide, output examples, safety rules
 prompts/              portable prompt pack for other communities
 test/                 30 tests: intake logic, manifest, registration
@@ -126,7 +126,7 @@ icon.svg              original artwork (three-line trigram inside a ring)
 
 ### Adding a system
 
-Add one entry to `SYSTEM_SPECS` in `lib/intake.js` with its minimum evidence checks, mirror it in `prompts/suanming.spec.json`, document it in `references/systems.md` and the two READMEs. The parity test fails until the spec file matches, which keeps the docs and the validator in sync.
+Add one entry to `SYSTEM_SPECS` in `lib/intake.js` with its minimum evidence checks, mirror it in `prompts/cosmogram.spec.json`, document it in `references/systems.md` and the two READMEs. The parity test fails until the spec file matches, which keeps the docs and the validator in sync.
 
 ## Community
 

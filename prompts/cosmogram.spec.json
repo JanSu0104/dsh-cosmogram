@@ -1,5 +1,5 @@
 {
-  "name": "suanming",
+  "name": "cosmogram",
   "version": "0.1.0",
   "license": "MIT",
   "description": "Machine-readable intake contract for the nine supported systems. It lists minimum evidence only; it never defines chart calculation.",

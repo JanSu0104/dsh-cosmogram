@@ -1,4 +1,4 @@
-# 命理解读助手 · dsh-suanming
+# Cosmogram · 命理解读助手
 
 一个给 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 用的传统文化解读插件，同时附带一套可粘贴到任意大模型的通用提示词。
 
@@ -22,8 +22,8 @@
 
 ## 插件包含两个能力
 
-1. **`suanming` 技能**：只在需要解读时加载。内含解读铁律、九大体系的解读顺序、术语白话对照、七段式输出模板、语气规范与安全边界。
-2. **`suanming_intake` 工具**：解读前的确定性校验。传入原始盘面，返回：
+1. **`cosmogram` 技能**：只在需要解读时加载。内含解读铁律、九大体系的解读顺序、术语白话对照、七段式输出模板、语气规范与安全边界。
+2. **`cosmogram_intake` 工具**：解读前的确定性校验。传入原始盘面，返回：
    - `status: ready | need_data`；
    - 已具备 / 仍缺失的必要元素；
    - 应当原样向用户提出的补充问题（绝不替你猜盘）；
@@ -46,7 +46,7 @@
 | 姓名学 | 姓名用字、笔画依据（繁体/简体）、三才五格或五行字义 |
 | 择日 | 所办事项、可选日期范围；有主事人属相或八字更完整 |
 
-`suanming_intake` 会把"最少需要"和"更完整"分开报告：可补充项不会挡住第一次解读。
+`cosmogram_intake` 会把"最少需要"和"更完整"分开报告：可补充项不会挡住第一次解读。
 
 只给出生时间时，它会说明本助手不排盘，列出上表最少需要的元素，并请你补充。
 
@@ -56,7 +56,7 @@
 
 **Web 界面**：打开 **插件（Plugins）** → **添加插件（Add plugin）** → 选择本目录。
 
-**在会话里**：调用 `plugin_manager`，`action: "install_bundle"`，`target` 填本目录的绝对路径；若 `suanming` 一行安装后是禁用状态，再启用它。
+**在会话里**：调用 `plugin_manager`，`action: "install_bundle"`，`target` 填本目录的绝对路径；若 `cosmogram` 一行安装后是禁用状态，再启用它。
 
 本地目录安装会链接这份代码，所以改动在插件重新加载后生效。插件安装进 profile，会影响该 profile 下的所有会话；移除 bundle 即可还原。
 
@@ -70,7 +70,7 @@
 补充：最近想换工作，适不适合？
 ```
 
-助手会先调用 `suanming_intake`，缺数据就先问，然后按下面七段输出：
+助手会先调用 `cosmogram_intake`，缺数据就先问，然后按下面七段输出：
 
 1. 当前使用的体系与数据来源
 2. 关键信息摘要
@@ -88,8 +88,8 @@
 
 `prompts/` 里是同一套契约的通用版本：
 
-- `prompts/suanming.prompt.md`：整段粘贴为系统提示 / 自定义指令 / Project 指令，适用于 ChatGPT、Claude、Gemini、DeepSeek、Qwen、Kimi 或本地模型；
-- `prompts/suanming.spec.json`：九大体系与最低数据要求的机器可读清单，方便你自己写校验器或工具；
+- `prompts/cosmogram.prompt.md`：整段粘贴为系统提示 / 自定义指令 / Project 指令，适用于 ChatGPT、Claude、Gemini、DeepSeek、Qwen、Kimi 或本地模型；
+- `prompts/cosmogram.spec.json`：九大体系与最低数据要求的机器可读清单，方便你自己写校验器或工具；
 - `prompts/README.md`：使用说明，以及它与 DSH 插件的差别。
 
 ## 边界与免责
@@ -113,9 +113,9 @@ npm run check   # 逐个模块语法检查
 ```
 index.js              插件入口：注册技能与工具
 lib/intake.js         零依赖的校验、体系识别、骨架生成
-lib/tool.js           suanming_intake 工具定义
-lib/skill.js          suanming 技能注册
-assets/suanming.md    技能正文（解读契约）
+lib/tool.js           cosmogram_intake 工具定义
+lib/skill.js          cosmogram 技能注册
+assets/cosmogram.md    技能正文（解读契约）
 references/           分体系解读要点、输出范例、安全规则
 prompts/              给其他社区用的通用提示词与规范
 test/                 30 个测试：校验逻辑、清单、注册
@@ -124,7 +124,7 @@ locale/{en,zh}.json   插件管理器的标题与描述
 icon.svg              原创图标（圆盘内三爻）
 ```
 
-增加新体系：在 `lib/intake.js` 的 `SYSTEM_SPECS` 里加一项（含最低数据校验），同步 `prompts/suanming.spec.json`、`references/systems.md` 和两份 README。清单一致性测试会在两边不同步时失败。
+增加新体系：在 `lib/intake.js` 的 `SYSTEM_SPECS` 里加一项（含最低数据校验），同步 `prompts/cosmogram.spec.json`、`references/systems.md` 和两份 README。清单一致性测试会在两边不同步时失败。
 
 ## 参与
 
@@ -134,7 +134,7 @@ icon.svg              原创图标（圆盘内三爻）
 
 这个包已经可以直接发布：MIT 许可、零运行时依赖、`files` 列全了所有资源、插件管理器所需的标题与描述来自 `locale/`。
 
-1. 若 npm 上的 `dsh-suanming` 已被占用，改 `package.json` 里的包名（同时改 `cordis.patch.yml` 的 `name` 与 profile 依赖）。
+1. 若 npm 上的 `dsh-cosmogram` 已被占用，改 `package.json` 里的包名（同时改 `cordis.patch.yml` 的 `name` 与 profile 依赖）。
 2. `npm publish --access public`；或者只把 `prompts/` 作为一个独立的通用提示词仓库发布。
 3. 给仓库加 `dsh-plugin`、`deepseek-harness`、`chinese-metaphysics`、`tarot`、`bazi` 等 topic。
 

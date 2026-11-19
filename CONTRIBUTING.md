@@ -20,14 +20,14 @@ Tests use `node:test` and need no install step. They run on Node 20 and 22 in CI
 ## Adding a system
 
 1. Add an entry to `SYSTEM_SPECS` in `lib/intake.js`: `id`, `label`, `en`, `aliases`, `required` (each with `key`, `label`, `question`, `check`), `recommended` (same shape; reported as optional suggestions), `optional`, `scope`.
-2. Mirror it in `prompts/suanming.spec.json` — the parity test fails until the labels match.
+2. Mirror it in `prompts/cosmogram.spec.json` — the parity test fails until the labels match.
 3. Document it in `references/systems.md` with the five fixed blocks: minimum data, reading order, term-to-plain-language, can/cannot answer, follow-up directions.
 4. Update the minimum-data table in `README.md` and `README.zh.md`.
 5. Add at least one ready-path and one missing-data test in `test/intake.test.js`.
 
 ## Changing prompts
 
-Keep the seven-section structure stable; downstream users and tools rely on it. If a boundary sentence changes, update it in `assets/suanming.md`, `references/output-and-safety.md`, `prompts/suanming.prompt.md` and the READMEs together.
+Keep the seven-section structure stable; downstream users and tools rely on it. If a boundary sentence changes, update it in `assets/cosmogram.md`, `references/output-and-safety.md`, `prompts/cosmogram.prompt.md` and the READMEs together.
 
 ## Translations
 
