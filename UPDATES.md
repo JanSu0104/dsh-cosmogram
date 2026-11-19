@@ -340,7 +340,12 @@ cosmogram (dsh-cosmogram): failed to import: Error: ENOENT: no such file or dire
 
 - `node --check`：`client.js`、`lib/routes.js`、`lib/store.js` 通过
 - `npm test`：47 个测试通过
-- `npm pack --dry-run`：确认 `client.js` 与新增模块在包内
+- `npm pack --dry-run`：`client.js` 与新增模块在包内（27 个文件）
+- npm：`0.3.0` 已上线，`latest` 指向它
+- GitHub：commit `35895e9`，tag `v0.3.0`
+- profile：`remove_bundle` → `install_bundle dsh-cosmogram@0.3.0`，`application: applied`
+- 路由实测（curl 宿主端口）：`state` 返回版本与设置；`save` 写入 profile 的 `cosmogram.settings.json`；`reset` 删除文件并回到默认
+- 未验证：标签在页面上的实际渲染，需要重启宿主后人工确认
 
 ---
 
