@@ -260,7 +260,9 @@ GitHub Actions 的 `CI` 工作流在最近两次 push 上均为 `completed / suc
 
 - `plugin_manager list_bundles`：`dsh-cosmogram` 行正常
 - `npm test`：30 个测试通过
-- 发布与推送结果见下一条
+- npm：`latest` 已指向 `0.1.1`（19 个文件），临时目录安装后版本与 `CHANGELOG.md` 均正确
+- GitHub：commit `8ae6b14`，tag `v0.1.1`
+- 遗留：`0.0.0-stage` 占位版的 `npm deprecate` 仍被 2FA 拦截（`EOTP`），需要下一次授权时处理
 
 ---
 
