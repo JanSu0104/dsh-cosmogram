@@ -31,6 +31,7 @@
 | 004 | 2026-11-19 22:10 | 0.1.0 | edit / bash / git / curl | meta | 补 `repository`/`homepage`/`bugs` 指回 GitHub；登记 origin；诊断 GitHub 不可达原因（本地代理 7890 可用，推送缺凭据） | `package.json`、`UPDATES.md` | 30 个测试通过；`git ls-remote` 经代理可连，推送返回 401 待凭据 |
 | 005 | 2026-11-19 22:16 | 0.1.0 | bash / git / curl | meta | 首次推送到 GitHub：force 覆盖网页上传的旧快照，补齐隐藏文件与完整提交历史 | 远端 `main`（26 文件、8 提交） | `.gitignore` 与 `ci.yml` 均 200；远端 HEAD 与本地一致 |
 | 006 | 2026-11-19 22:20 | 0.1.0 | curl / bash / git | meta | 设置仓库 topics（11 个）；确认 GitHub Actions 两次运行均成功 | 仓库设置、`UPDATES.md` | CI：success ×2 |
+| 007 | 2026-11-19 22:39 | 0.1.0 | npm / bash / curl | meta | 将 0.1.0 发布到 npm（首次发布走 staged 处理，约 4 分钟后生效）；独立目录安装验证通过 | `UPDATES.md` | `npm view` 版本与元数据正确；`npm i` 后 `import` 成功 |
 
 ### 001 · 2026-11-19 21:45 · 整理为可发布目录（v0.1.0 基线）
 
@@ -205,6 +206,31 @@ GitHub 仓库已由作者建好：`https://github.com/JanSu0104/dsh-cosmogram`�
 **校验**
 
 GitHub Actions 的 `CI` 工作流在最近两次 push 上均为 `completed / success`（Node 20 与 22 矩阵，语法检查 + 30 个测试）。这说明仓库内容在干净环境下可独立跑通，不依赖本机。
+
+### 007 · 2026-11-19 22:39 · 发布 0.1.0 到 npm
+
+**过程**
+
+1. 账号开启 2FA 后，`npm publish` 返回 `EOTP`，要求网页授权。非交互环境下 npm 会把授权链接打码，改用 `script -q /dev/null npm publish` 分配伪终端后拿到真实链接，由作者在浏览器完成授权。
+2. 授权完成后 `PUT /dsh-cosmogram` 返回 202，npm 提示“正在处理”。registry 先出现 `0.0.0-stage` 占位版本（npm 首次发布新包名的 staged 机制）。
+3. 约 4 分钟后 `0.1.0` 生效：placeholder 14:32:35 创建，正式版本 14:36:43 上线。
+
+**结果**
+
+| 检查 | 结果 |
+| --- | --- |
+| `npm view dsh-cosmogram version` | `0.1.0` |
+| `repository.url` | `git+https://github.com/JanSu0104/dsh-cosmogram.git` |
+| `homepage` | 指向 GitHub 仓库 |
+| `dist.tarball` | `https://registry.npmjs.org/dsh-cosmogram/-/dsh-cosmogram-0.1.0.tgz` |
+| 独立安装 | 临时目录 `npm i dsh-cosmogram` 成功 |
+| 可加载性 | `import('dsh-cosmogram')` → `name`、`apply`、`inject: ["skills","tools"]` 均正确 |
+| 包内文件 | 18 个，`lib`/`locale`/`assets`/`references`/`prompts`/`icon.svg` 齐全 |
+
+**遗留**
+
+- `0.0.0-stage` 占位版本仍在。`npm deprecate` 同样要求 2FA 授权，本次未完成，留待下次一并处理（它不会被 `npm i dsh-cosmogram` 装上，但按精确版本仍可安装）。
+- `v0.1.0` 的 git tag 与 GitHub Release 附件尚未创建。
 
 ---
 
