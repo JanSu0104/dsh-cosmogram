@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.3.1] - 2026-11-19
+
+### Fixed
+
+- The **命盘** tab registered but the view body stayed empty. The panel now registers through `slots.inject` exactly like the host's own view tabs, prints its heading before the state request resolves, and wraps rendering in an error boundary that shows the failure instead of a blank area.
+- Client-side render errors are appended to `cosmogram-client.log` in the profile through `/__cosmogram/api` (`log`), so a blank or broken panel can be diagnosed without browser devtools.
+
 ## [0.3.0] - 2026-11-19
 
 ### Added

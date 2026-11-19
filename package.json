@@ -1,6 +1,6 @@
 {
   "name": "dsh-cosmogram",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Traditional Chinese metaphysics and divination reading assistant for DeepSeek Harness: interprets user-supplied charts across nine systems, never casts them.",
   "type": "module",
   "license": "MIT",

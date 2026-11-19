@@ -36,6 +36,7 @@
 | 009 | 2026-11-19 23:02 | 0.2.0 | write / edit / bash / node / npm / git | feat | 落地前三项精度升级（覆盖率、结构校验、零历法推演、交付前自检）并加设置面板 | `lib/derive.js`、`lib/audit.js`、`lib/data.js`、`lib/config.js`、`lib/settings.js`、`lib/intake.js`、`lib/tool.js`、`index.js`、`assets/cosmogram.md`、两份 README、`CHANGELOG.md`、`package.json`、`test/*`、`UPDATES.md` | 47 个测试通过；`npm run check` 通过 |
 | 010 | 2026-11-19 23:15 | 0.2.0 | plugin_manager / bash / node | fix | 定位「ENOENT …/suanming/index.js」为宿主进程缓存的旧模块解析，磁盘已无旧路径；toggle 复现，需重启宿主清除缓存 | `UPDATES.md` | `require.resolve` 指向 profile 内 0.2.0；`set_bundle` 激活仍报旧路径 |
 | 011 | 2026-11-19 23:30 | 0.3.0 | write / edit / bash / node / npm / git | feat | 新增会话标签「命盘」：显示运行状态并就地调整四项设置；宿主新增 `/__cosmogram/api`（state/save/reset） | `client.js`、`lib/routes.js`、`lib/store.js`、`index.js`、`package.json`、两份 README、`CHANGELOG.md`、`UPDATES.md` | 47 个测试通过；`node --check` 通过 |
+| 012 | 2026-11-19 23:35 | 0.3.1 | write / edit / bash / node / npm | fix | 修复「命盘」标签出现但内容空白：改为 `slots.inject` 注册、先渲染标题、加错误边界与客户端错误日志 | `client.js`、`lib/routes.js`、`package.json`、`CHANGELOG.md`、`UPDATES.md` | 47 个测试通过；`node --check` 通过 |
 
 ### 001 · 2026-11-19 21:45 · 整理为可发布目录（v0.1.0 基线）
 
@@ -346,6 +347,24 @@ cosmogram (dsh-cosmogram): failed to import: Error: ENOENT: no such file or dire
 - profile：`remove_bundle` → `install_bundle dsh-cosmogram@0.3.0`，`application: applied`
 - 路由实测（curl 宿主端口）：`state` 返回版本与设置；`save` 写入 profile 的 `cosmogram.settings.json`；`reset` 删除文件并回到默认
 - 未验证：标签在页面上的实际渲染，需要重启宿主后人工确认
+
+### 012 · 2026-11-19 23:35 · 修复「命盘」空白
+
+**现象**：重启后标签条出现「命盘」，选中它，内容区全空，没有文字也没有控件。
+
+**判断**：标签能出现说明 `slots.register` 已生效，空白发生在组件挂载或渲染阶段。与可用的 `免费模型` 标签逐行对比后，两处差异：
+
+1. 它用 `slots.inject('conversation.view', () => slots.register(...))` 注册，我们用的是 `ctx.effect(() => slots.register(...))`；
+2. 它的面板始终输出一个带高度、带背景的根容器，我们的面板在数据到达前只输出一行文字。
+
+**修复（0.3.1）**
+
+- 注册方式改为与宿主的视图标签完全一致：`slots.inject(...)` 包裹 `slots.register(...)`，工厂函数接收 props 后返回组件。
+- 面板先渲染标题与说明，再按 `state` 是否到达切换内容；数据请求失败时把错误显示在页面上，而不是留白。
+- 根容器固定 `height: 100%`、`overflow: auto`，避免落在零高度容器里看不见。
+- 增加 React 错误边界：组件抛错时显示「面板渲染失败：…」，并通过 `/__cosmogram/api` 的 `log` 方法把堆栈写入 profile 下的 `cosmogram-client.log`。
+
+**校验**：47 个测试通过；`client.js` 与 `lib/routes.js` 语法检查通过；发布与安装结果见下一条。
 
 ---
 

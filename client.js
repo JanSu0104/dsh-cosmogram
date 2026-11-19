@@ -9,7 +9,7 @@
 
 window.__ModuleLoader__.load({
   id: 'dsh-cosmogram',
-  factory(require) {
+  factory: (require) => {
     const React = require('react')
     const h = React.createElement
 
@@ -18,12 +18,18 @@ window.__ModuleLoader__.load({
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ method, args: args || {} }),
-      }).then(function (response) {
-        return response.json().then(function (body) {
-          if (!response.ok || body.ok === false) throw new Error((body && body.error) || 'HTTP ' + response.status)
-          return body
-        })
-      })
+      }).then((response) => response.json().then((body) => {
+        if (!response.ok || body.ok === false) throw new Error((body && body.error) || 'HTTP ' + response.status)
+        return body
+      }))
+    }
+
+    function report(where, error) {
+      try {
+        api('log', { message: where + ': ' + String((error && error.stack) || error) }).catch(() => {})
+      } catch {
+        /* reporting must never throw */
+      }
     }
 
     const CARD = {
@@ -31,7 +37,6 @@ window.__ModuleLoader__.load({
       borderRadius: 10,
       padding: '14px 16px',
       marginBottom: 14,
-      background: 'rgba(127,127,127,.05)',
     }
     const LABEL = { fontSize: 12, opacity: 0.72, marginBottom: 6, display: 'block' }
     const ROW = { display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }
@@ -72,8 +77,7 @@ window.__ModuleLoader__.load({
         h('div', { style: { flex: 1 } },
           h('span', { style: LABEL }, props.title),
           h('span', { style: HINT }, props.hint)),
-        props.children,
-      )
+        props.children)
     }
 
     function Panel() {
@@ -82,15 +86,18 @@ window.__ModuleLoader__.load({
       const [message, setMessage] = React.useState('')
       const [busy, setBusy] = React.useState(false)
 
+      React.useEffect(function () {
+        let alive = true
+        api('state')
+          .then(function (next) { if (alive) { setState(next); setDraft(next.settings) } })
+          .catch(function (error) { if (alive) setMessage('读取失败：' + error.message) })
+        return function () { alive = false }
+      }, [])
+
       function apply(next) {
         setState(next)
         setDraft(next.settings)
       }
-      function load() {
-        api('state').then(apply).catch(function (error) { setMessage('读取失败：' + error.message) })
-      }
-      React.useEffect(load, [])
-
       function save() {
         setBusy(true)
         setMessage('')
@@ -108,82 +115,117 @@ window.__ModuleLoader__.load({
           .then(function () { setBusy(false) })
       }
 
-      if (!state || !draft) {
-        return h('div', { style: { padding: 24, fontSize: 13, opacity: 0.75 } },
-          message || '正在读取 Cosmogram 设置…')
-      }
+      const version = state ? state.version : '…'
+      const ready = state !== null && draft !== null
 
-      return h('div', { style: { padding: '18px 22px', maxWidth: 720 } },
-        h('div', { style: { display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 4 } },
-          h('div', { style: { fontSize: 16, fontWeight: 600 } }, 'Cosmogram · 命理解读'),
-          h('span', { style: { fontSize: 12, opacity: 0.62 } }, 'v' + state.version)),
-        h('div', { style: { fontSize: 12, opacity: 0.62, marginBottom: 16 } },
-          '九大体系解读插件：不排盘、不编造；缺数据先追问，交付前自检。'),
+      return h('div', {
+        style: {
+          height: '100%', overflow: 'auto', boxSizing: 'border-box',
+          padding: '18px 22px', maxWidth: 760, color: 'inherit',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+        },
+      },
+      h('div', { style: { display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 4 } },
+        h('div', { style: { fontSize: 16, fontWeight: 600 } }, 'Cosmogram · 命理解读'),
+        h('span', { style: { fontSize: 12, opacity: 0.62 } }, 'v' + version)),
+      h('div', { style: { fontSize: 12, opacity: 0.62, marginBottom: 16 } },
+        '九大体系解读插件：不排盘、不编造；缺数据先追问，交付前自检。'),
 
-        h('div', { style: CARD },
-          h('div', { style: { fontSize: 13, fontWeight: 600, marginBottom: 10 } }, '运行状态'),
-          h('div', { style: { display: 'grid', gridTemplateColumns: '110px 1fr', rowGap: 6, fontSize: 13 } },
-            h('span', { style: { opacity: 0.62 } }, '插件'),
-            h('span', null, state.name),
-            h('span', { style: { opacity: 0.62 } }, '状态'),
-            h('span', null, '已启用 · 技能 1 · 工具 2（intake / audit）'),
-            h('span', { style: { opacity: 0.62 } }, '设置文件'),
-            h('span', { style: { fontFamily: 'ui-monospace, monospace', fontSize: 11, opacity: 0.8 } }, state.settingsPath))),
+      !ready ? h('div', { style: { fontSize: 13, opacity: 0.8 } }, message || '正在读取 Cosmogram 设置…') : null,
 
-        h('div', { style: CARD },
-          h('div', { style: { fontSize: 13, fontWeight: 600, marginBottom: 12 } }, '解读设置'),
-          h(Field, { title: '数据门槛', hint: '决定材料不全时是追问还是先做有限解读' },
-            h('select', {
-              style: INPUT,
-              value: draft.strictness,
-              onChange: function (event) { setDraft({ ...draft, strictness: event.target.value }) },
-            }, STRICTNESS.map(function (item) {
-              return h('option', { key: item[0], value: item[0] }, item[1])
-            }))),
+      ready ? h('div', { style: CARD },
+        h('div', { style: { fontSize: 13, fontWeight: 600, marginBottom: 10 } }, '运行状态'),
+        h('div', { style: { display: 'grid', gridTemplateColumns: '110px 1fr', rowGap: 6, fontSize: 13 } },
+          h('span', { style: { opacity: 0.62 } }, '插件'),
+          h('span', null, state.name),
+          h('span', { style: { opacity: 0.62 } }, '状态'),
+          h('span', null, '已启用 · 技能 1 · 工具 2（intake / audit）'),
+          h('span', { style: { opacity: 0.62 } }, '设置文件'),
+          h('span', { style: { fontFamily: 'ui-monospace, monospace', fontSize: 11, opacity: 0.8, wordBreak: 'break-all' } }, state.settingsPath))) : null,
 
-          h(Field, { title: '覆盖率门槛', hint: '仅 lenient 使用；0–100' },
+      ready ? h('div', { style: CARD },
+        h('div', { style: { fontSize: 13, fontWeight: 600, marginBottom: 12 } }, '解读设置'),
+        h(Field, { title: '数据门槛', hint: '决定材料不全时是追问还是先做有限解读' },
+          h('select', {
+            style: INPUT,
+            value: draft.strictness,
+            onChange: function (event) { setDraft({ ...draft, strictness: event.target.value }) },
+          }, STRICTNESS.map(function (item) {
+            return h('option', { key: item[0], value: item[0] }, item[1])
+          }))),
+
+        h(Field, { title: '覆盖率门槛', hint: '仅 lenient 使用；0–100' },
+          h('input', {
+            type: 'number', min: 0, max: 100, style: { ...INPUT, width: 90 },
+            value: draft.coverageThreshold,
+            onChange: function (event) { setDraft({ ...draft, coverageThreshold: Number(event.target.value) }) },
+          })),
+
+        h(Field, { title: '推演要点', hint: '八字十神、五行、星盘相位等由输入算出的要点' },
+          h('label', { style: { display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 } },
             h('input', {
-              type: 'number', min: 0, max: 100, style: { ...INPUT, width: 90 },
-              value: draft.coverageThreshold,
-              onChange: function (event) { setDraft({ ...draft, coverageThreshold: Number(event.target.value) }) },
-            })),
+              type: 'checkbox', checked: !!draft.showFacts,
+              onChange: function (event) { setDraft({ ...draft, showFacts: event.target.checked }) },
+            }),
+            h('span', null, draft.showFacts ? '已开启' : '已关闭'))),
 
-          h(Field, { title: '推演要点', hint: '八字十神、五行、星盘相位等由输入算出的要点' },
-            h('label', { style: { display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 } },
-              h('input', {
-                type: 'checkbox', checked: !!draft.showFacts,
-                onChange: function (event) { setDraft({ ...draft, showFacts: event.target.checked }) },
-              }),
-              h('span', null, draft.showFacts ? '已开启' : '已关闭'))),
+        h(Field, { title: '交付前自检', hint: '七段、绝对化用词、边界、未溯源实体' },
+          h('select', {
+            style: INPUT,
+            value: draft.auditMode,
+            onChange: function (event) { setDraft({ ...draft, auditMode: event.target.value }) },
+          }, AUDIT.map(function (item) {
+            return h('option', { key: item[0], value: item[0] }, item[1])
+          }))),
 
-          h(Field, { title: '交付前自检', hint: '七段、绝对化用词、边界、未溯源实体' },
-            h('select', {
-              style: INPUT,
-              value: draft.auditMode,
-              onChange: function (event) { setDraft({ ...draft, auditMode: event.target.value }) },
-            }, AUDIT.map(function (item) {
-              return h('option', { key: item[0], value: item[0] }, item[1])
-            }))),
+        h('div', { style: { display: 'flex', gap: 10, alignItems: 'center', marginTop: 4 } },
+          h('button', { type: 'button', style: PRIMARY, disabled: busy, onClick: save }, busy ? '保存中…' : '保存设置'),
+          h('button', { type: 'button', style: BUTTON, disabled: busy, onClick: reset }, '恢复默认'),
+          message ? h('span', { style: { fontSize: 12, opacity: 0.75 } }, message) : null)) : null,
 
-          h('div', { style: { display: 'flex', gap: 10, alignItems: 'center', marginTop: 4 } },
-            h('button', { type: 'button', style: PRIMARY, disabled: busy, onClick: save }, busy ? '保存中…' : '保存设置'),
-            h('button', { type: 'button', style: BUTTON, disabled: busy, onClick: reset }, '恢复默认'),
-            message ? h('span', { style: { fontSize: 12, opacity: 0.75 } }, message) : null)),
-
-        h('div', { style: { fontSize: 12, opacity: 0.55, lineHeight: 1.6 } },
-          '设置保存在 profile 目录，重启后仍然生效。插件配置页里的值作为初始默认，本面板保存过的项以面板为准。'))
+      h('div', { style: { fontSize: 12, opacity: 0.55, lineHeight: 1.6 } },
+        '设置保存在 profile 目录，重启后仍然生效。插件配置页里的值作为初始默认，本面板保存过的项以面板为准。'))
     }
 
+    /** Shows a readable message instead of an empty view if rendering fails. */
+    class Boundary extends React.Component {
+      constructor(props) {
+        super(props)
+        this.state = { error: '' }
+      }
+      static getDerivedStateFromError(error) {
+        return { error: String((error && error.message) || error) }
+      }
+      componentDidCatch(error) {
+        report('render', error)
+      }
+      render() {
+        if (this.state.error) {
+          return h('div', { style: { padding: 20, fontSize: 13, color: '#f85149', whiteSpace: 'pre-wrap' } },
+            'Cosmogram 面板渲染失败：' + this.state.error)
+        }
+        return this.props.children
+      }
+    }
+
+    let slotsService
     return {
       inject: ['slots'],
       apply(ctx) {
-        const slots = ctx.get('slots')
-        ctx.effect(function () {
-          return slots.register(
-            { name: 'conversation.view', id: 'dsh-cosmogram', label: '命盘', order: 8 },
-            function () { return Panel }
-          )
-        })
+        const slots = ctx.get('slots') || ctx.slots || slotsService
+        if (!slots || typeof slots.register !== 'function') {
+          report('apply', new Error('slots service unavailable'))
+          return
+        }
+        slotsService = slots
+        slots.inject('conversation.view', () => slots.register(
+          { name: 'conversation.view', id: 'dsh-cosmogram', label: '命盘', order: 8 },
+          function () {
+            return function CosmogramPanel() {
+              return h(Boundary, null, h(Panel))
+            }
+          },
+        ))
       },
     }
   },
