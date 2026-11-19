@@ -208,6 +208,11 @@ window.__ModuleLoader__.load({
       }
     }
 
+    /** The slot takes a component, not a factory: the host's own tabs pass one. */
+    function CosmogramPanel() {
+      return h(Boundary, null, h(Panel))
+    }
+
     let slotsService
     return {
       inject: ['slots'],
@@ -220,11 +225,7 @@ window.__ModuleLoader__.load({
         slotsService = slots
         slots.inject('conversation.view', () => slots.register(
           { name: 'conversation.view', id: 'dsh-cosmogram', label: '命盘', order: 8 },
-          function () {
-            return function CosmogramPanel() {
-              return h(Boundary, null, h(Panel))
-            }
-          },
+          CosmogramPanel,
         ))
       },
     }
