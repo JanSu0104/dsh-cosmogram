@@ -4,7 +4,7 @@
 
 覆盖：**紫微斗数 / 八字四柱 / 六爻 / 奇门遁甲 / 风水 / 塔罗 / 星座星盘 / 姓名学 / 择日**。
 
-[English README](README.md) ｜ [MIT 许可](LICENSE)
+**简体中文** ｜ [English](README.md)
 
 ---
 
@@ -58,6 +58,8 @@
 
 **在会话里**：调用 `plugin_manager`，`action: "install_bundle"`，`target` 填本目录的绝对路径；若 `cosmogram` 一行安装后是禁用状态，再启用它。
 
+**从 npm 安装（发布后）**：调用 `plugin_manager`，`action: "install_bundle"`，`target` 填 `dsh-cosmogram`；或在 **添加插件** 里直接输入包名。
+
 本地目录安装会链接这份代码，所以改动在插件重新加载后生效。插件安装进 profile，会影响该 profile 下的所有会话；移除 bundle 即可还原。
 
 ### 使用示例
@@ -70,7 +72,7 @@
 补充：最近想换工作，适不适合？
 ```
 
-助手会先调用 `cosmogram_intake`，缺数据就先问，然后按下面七段输出：
+助手会先调用 `cosmogram_intake`，缺数据就先问，然后按下面七段输出。中文是常见输入，英文提问同样可用（技能与工具描述都是双语的）。
 
 1. 当前使用的体系与数据来源
 2. 关键信息摘要
@@ -124,7 +126,9 @@ locale/{en,zh}.json   插件管理器的标题与描述
 icon.svg              原创图标（圆盘内三爻）
 ```
 
-增加新体系：在 `lib/intake.js` 的 `SYSTEM_SPECS` 里加一项（含最低数据校验），同步 `prompts/cosmogram.spec.json`、`references/systems.md` 和两份 README。清单一致性测试会在两边不同步时失败。
+### 增加新体系
+
+在 `lib/intake.js` 的 `SYSTEM_SPECS` 里加一项（含最低数据校验），同步 `prompts/cosmogram.spec.json`、`references/systems.md` 和两份 README。清单一致性测试会在两边不同步时失败。
 
 ## 参与
 
@@ -135,7 +139,7 @@ icon.svg              原创图标（圆盘内三爻）
 这个包已经可以直接发布：MIT 许可、零运行时依赖、`files` 列全了所有资源、插件管理器所需的标题与描述来自 `locale/`。
 
 1. 若 npm 上的 `dsh-cosmogram` 已被占用，改 `package.json` 里的包名（同时改 `cordis.patch.yml` 的 `name` 与 profile 依赖）。
-2. `npm publish --access public`；或者只把 `prompts/` 作为一个独立的通用提示词仓库发布。
+2. 发布到公共 registry：`npm publish --registry=https://registry.npmjs.org`；只有带 scope 的包名（`@you/...`）才需要 `--access public`。
 3. 给仓库加 `dsh-plugin`、`deepseek-harness`、`chinese-metaphysics`、`tarot`、`bazi` 等 topic。
 
 从 registry 安装时解析的是同一份清单，图标、标题、描述不需要额外托管。
