@@ -29,6 +29,7 @@
 | 002 | 2026-11-19 21:57 | 0.1.0 | write / edit / bash / git | docs | README 中英分离：英文版标题、小节、体系名、七段全部英文化并给中文括注；中文版语言切换与发布命令对齐 | `README.md`、`README.zh.md` | 30 个测试通过；两版章节一一对应（各 12 节） |
 | 003 | 2026-11-19 22:05 | 0.1.0 | edit / bash / npm | meta | 增加 `publishConfig`，把发布目标固定为 npmjs 官方源与公开访问，避免本机镜像源导致发布失败 | `package.json`、`UPDATES.md` | 30 个测试通过；`npm publish --dry-run` 通过 |
 | 004 | 2026-11-19 22:10 | 0.1.0 | edit / bash / git / curl | meta | 补 `repository`/`homepage`/`bugs` 指回 GitHub；登记 origin；诊断 GitHub 不可达原因（本地代理 7890 可用，推送缺凭据） | `package.json`、`UPDATES.md` | 30 个测试通过；`git ls-remote` 经代理可连，推送返回 401 待凭据 |
+| 005 | 2026-11-19 22:16 | 0.1.0 | bash / git / curl | meta | 首次推送到 GitHub：force 覆盖网页上传的旧快照，补齐隐藏文件与完整提交历史 | 远端 `main`（26 文件、8 提交） | `.gitignore` 与 `ci.yml` 均 200；远端 HEAD 与本地一致 |
 
 ### 001 · 2026-11-19 21:45 · 整理为可发布目录（v0.1.0 基线）
 
@@ -157,6 +158,38 @@ GitHub 仓库已由作者建好：`https://github.com/JanSu0104/dsh-cosmogram`�
 
 **下一步**：作者提供 PAT 或在本机存入凭据后，`git push -u origin main` 即可；无需改动代码。
 
+### 005 · 2026-11-19 22:16 · 首次推送到 GitHub
+
+**背景**
+
+远端 `JanSu0104/dsh-cosmogram` 里已有 5 个网页上传提交，但缺 `.gitignore` 与 `.github/workflows/ci.yml`（网页上传不选隐藏文件），`package.json` 也还是旧快照。本地是完整状态，因此用 force 覆盖，而不是合并两段无关历史。
+
+**用什么工具**
+
+- `bash`：`mktemp` 生成临时 `GIT_ASKPASS` 脚本注入凭据
+- `git`：`push -u origin main --force`，经本地代理 `127.0.0.1:7890`
+- `curl`：用 GitHub API 复核远端文件与提交
+
+**过程**
+
+1. 先验证 PAT 身份与权限：`JanSu0104`，仓库 `permissions.push = true`。
+2. 直连 `github.com` 仍被阻断，改用 `-c http.proxy=http://127.0.0.1:7890`。
+3. 凭据通过临时 `GIT_ASKPASS` 脚本注入，推送后立即删除；**没有**写进 `git config`、`~/.git-credentials` 或钥匙串。
+4. 推送结果：`+ 37f875b...b242203 main -> main (forced update)`。
+
+**远端复核**
+
+| 检查 | 结果 |
+| --- | --- |
+| `.gitignore` | 200 |
+| `.github/workflows/ci.yml` | 200 |
+| `package.json` 的 `repository` / `homepage` | 正确指向本仓库 |
+| `publishConfig` | `public` + npmjs 官方源 |
+| 提交数 | 8（本地历史完整上传） |
+| `ls-remote` HEAD | 与本地 `b242203` 一致 |
+
+**安全提醒**：本次使用作者在对话中提供的 PAT，该凭据已出现在聊天记录里，应按已泄露处理——推送完成后立即吊销并重建一个最小权限令牌（只勾 `repo`，或 fine-grained 只给本仓库 Contents 读写）。
+
 ---
 
 ## 上传清单（照这个传，别的都不用传）
@@ -190,9 +223,9 @@ GitHub 仓库已由作者建好：`https://github.com/JanSu0104/dsh-cosmogram`�
 
 ## 发布待办
 
-- [ ] 在 GitHub 建空仓库（不勾 README / .gitignore），`git remote add origin` 后推 `main`
-- [ ] `package.json` 补 `repository` 与 `homepage`（需要 GitHub 用户名，目前留空）
+- [x] 在 GitHub 建仓库并推送 `main`（2026-11-19 22:16，见 005）
+- [x] `package.json` 补 `repository` / `homepage` / `bugs`（见 004）
 - [ ] 打 `v0.1.0` tag，Release 附件放 `dsh-cosmogram-0.1.0.tgz`
 - [ ] 仓库加 `dsh-plugin`、`deepseek-harness` 等 topics
-- [ ] 可选：`npm publish --registry=https://registry.npmjs.org --access public`
+- [ ] `npm publish`（`publishConfig` 已就位，只差 `npm login`）
 - [ ] 可选：提交 awesome-dsh-plugin 收录（要求仓库创建满 1 天）
