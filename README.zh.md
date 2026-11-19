@@ -128,6 +128,16 @@ icon.svg              原创图标（卦象标记）
 
 欢迎 issue 与 PR。两条底线不接受改动：**代码里不做排盘计算**，**提示词里不出现绝对化与恐吓式表达**。详见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
+## 发布到社区
+
+这个包已经可以直接发布：MIT 许可、零运行时依赖、`files` 列全了所有资源、插件管理器所需的标题与描述来自 `locale/`。
+
+1. 若 npm 上的 `dsh-suanming` 已被占用，改 `package.json` 里的包名（同时改 `cordis.patch.yml` 的 `name` 与 profile 依赖）。
+2. `npm publish --access public`；或者只把 `prompts/` 作为一个独立的通用提示词仓库发布。
+3. 给仓库加 `dsh-plugin`、`deepseek-harness`、`chinese-metaphysics`、`tarot`、`bazi` 等 topic。
+
+从 registry 安装时解析的是同一份清单，图标、标题、描述不需要额外托管。
+
 ## 许可
 
 [MIT](LICENSE)。可以自由 fork、翻译、二次分发，请保留边界规则。

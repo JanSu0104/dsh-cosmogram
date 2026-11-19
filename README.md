@@ -130,6 +130,16 @@ Add one entry to `SYSTEM_SPECS` in `lib/intake.js` with its minimum evidence che
 
 Issues and pull requests are welcome. Please keep the two non-negotiables: **no chart calculation in code**, and **no absolutes or fear framing in prompts**. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Publishing it to a wider community
+
+The package is publish-ready: MIT license, zero runtime dependencies, `files` lists every shipped resource, and Plugin Manager metadata comes from `locale/`.
+
+1. If the npm name is taken, rename it in `package.json` (and in the `cordis.patch.yml` row and the profile dependency).
+2. `npm publish --access public`, or publish `prompts/` alone as a portable prompt repository.
+3. Add topics such as `dsh-plugin`, `deepseek-harness`, `chinese-metaphysics`, `tarot`, `bazi` to the repository.
+
+A registry install resolves the same manifest, so the icon, title and description need no extra hosting.
+
 ## License
 
 [MIT](LICENSE). Fork it, translate it, ship it — keep the boundary rules intact.
