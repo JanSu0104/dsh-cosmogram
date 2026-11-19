@@ -27,6 +27,7 @@
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 001 | 2026-11-19 21:45 | 0.1.0 | bash / edit / write / git / node / npm | chore | 插件项目迁入 `dsh-cosmogram/` 作为唯一发布根，分支改 `main`，忽略打包产物，建立本档案 | 全部（移动）；`.gitignore`；`+UPDATES.md` | 30 个测试通过；`npm run check` 通过；`npm pack --dry-run` 18 files / 92.9 kB |
 | 002 | 2026-11-19 21:57 | 0.1.0 | write / edit / bash / git | docs | README 中英分离：英文版标题、小节、体系名、七段全部英文化并给中文括注；中文版语言切换与发布命令对齐 | `README.md`、`README.zh.md` | 30 个测试通过；两版章节一一对应（各 12 节） |
+| 003 | 2026-11-19 22:05 | 0.1.0 | edit / bash / npm | meta | 增加 `publishConfig`，把发布目标固定为 npmjs 官方源与公开访问，避免本机镜像源导致发布失败 | `package.json`、`UPDATES.md` | 30 个测试通过；`npm publish --dry-run` 通过 |
 
 ### 001 · 2026-11-19 21:45 · 整理为可发布目录（v0.1.0 基线）
 
@@ -82,6 +83,35 @@ GitHub 默认展示的是 `README.md`，但它标题是中文「Cosmogram · 命
 - `npm test`：30 个测试全部通过
 - 标题结构：`README.md` 与 `README.zh.md` 各 12 节，顺序一致
 - 语言分布：英文版 CJK 字符仅出现在术语括注与中文原文引用中；中文版仅保留必要的英文专名与命令
+
+### 003 · 2026-11-19 22:05 · 发布准备：固定 npm 发布目标
+
+**为什么**
+
+本机 `registry` 指向 `https://registry.npmmirror.com`（镜像只读，不能发布）。直接 `npm publish` 会打到镜像并被 403 拒绝，每次靠命令行 `--registry` 又多一个忘记的机会。
+
+**用什么工具**
+
+- `edit`：`package.json` 增加 `publishConfig`
+- `bash` / `npm`：`npm publish --dry-run` 预演
+- `npm login --auth-type=web`：尝试发起登录，因无人实时确认，CLI 回落到 `Username:` 提示后以退出码 1 结束（**未登录成功，未产生 token**）
+
+**改了什么**
+
+```json
+"publishConfig": { "access": "public", "registry": "https://registry.npmjs.org" }
+```
+
+只影响 `npm publish` 的目标，不改本机全局 registry，也不影响 DSH 的安装源选择。
+
+**没有改动**：代码、技能正文、测试、文档内容。
+
+**校验**
+
+- `npm test`：30 个测试通过
+- `npm publish --dry-run`：18 files / 92.9 kB，目标 `https://registry.npmjs.org/`
+
+**发布状态**：仍未发布。npm 认证需要账号本人完成（浏览器授权、密码或 OTP），助手侧无法代办；登录成功后 `npm publish` 一条命令即可，随后补记发布条目。
 
 ---
 

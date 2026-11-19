@@ -4,6 +4,10 @@
   "description": "Traditional Chinese metaphysics and divination reading assistant for DeepSeek Harness: interprets user-supplied charts across nine systems, never casts them.",
   "type": "module",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
   "main": "index.js",
   "exports": {
     ".": "./index.js",
