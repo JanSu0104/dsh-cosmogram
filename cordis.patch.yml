@@ -1,0 +1,4 @@
+- insert:
+    - id: suanming
+      name: dsh-suanming
+      config: {}

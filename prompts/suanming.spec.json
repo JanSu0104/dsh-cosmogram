@@ -1,0 +1,110 @@
+{
+  "name": "suanming",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "Machine-readable intake contract for the nine supported systems. It lists minimum evidence only; it never defines chart calculation.",
+  "outputStructure": [
+    "当前使用的体系与数据来源",
+    "关键信息摘要",
+    "核心判断",
+    "主要依据",
+    "不确定或需要补充的信息",
+    "可执行建议",
+    "可继续追问的问题"
+  ],
+  "systems": [
+    {
+      "id": "ziwei",
+      "label": "紫微斗数",
+      "en": "Zi Wei Dou Shu",
+      "required": [
+        { "key": "palaces", "label": "宫位与命宫落点" },
+        { "key": "stars", "label": "主星/辅星" },
+        { "key": "sihua", "label": "生年四化" }
+      ],
+      "optional": ["大限与流年", "出生时间与性别", "身宫落点"]
+    },
+    {
+      "id": "bazi",
+      "label": "八字四柱",
+      "en": "BaZi four pillars",
+      "required": [{ "key": "pillars", "label": "四柱干支" }],
+      "optional": ["性别", "大运与起运", "当前流年", "出生地与真太阳时"]
+    },
+    {
+      "id": "liuyao",
+      "label": "六爻",
+      "en": "Liu Yao",
+      "required": [
+        { "key": "hexagram", "label": "本卦与变卦" },
+        { "key": "moving", "label": "动爻" },
+        { "key": "monthDay", "label": "月建与日辰" }
+      ],
+      "optional": ["世应", "六亲", "六神", "用神取法"]
+    },
+    {
+      "id": "qimen",
+      "label": "奇门遁甲",
+      "en": "Qi Men Dun Jia",
+      "required": [
+        { "key": "ju", "label": "阴阳遁与局数" },
+        { "key": "palaces", "label": "九宫盘面" },
+        { "key": "gates", "label": "八门/九星/八神" }
+      ],
+      "optional": ["值符值使", "问事类别", "三奇六仪"]
+    },
+    {
+      "id": "fengshui",
+      "label": "风水",
+      "en": "Feng Shui",
+      "required": [
+        { "key": "orientation", "label": "坐向或朝向" },
+        { "key": "layout", "label": "户型与功能区" }
+      ],
+      "optional": ["罗盘度数", "周边环境", "居住人信息", "楼层与采光"]
+    },
+    {
+      "id": "tarot",
+      "label": "塔罗",
+      "en": "Tarot",
+      "required": [
+        { "key": "spread", "label": "牌阵与位置含义" },
+        { "key": "cards", "label": "牌名" },
+        { "key": "orientation", "label": "正位/逆位" }
+      ],
+      "optional": ["提问背景", "时间范围", "切牌或指示牌"]
+    },
+    {
+      "id": "astrology",
+      "label": "星座星盘",
+      "en": "Astrology chart",
+      "required": [
+        { "key": "planets", "label": "行星落座" },
+        { "key": "signs", "label": "星座/度数" },
+        { "key": "houses", "label": "宫位" }
+      ],
+      "optional": ["相位", "宫主星", "行运或流年"]
+    },
+    {
+      "id": "name",
+      "label": "姓名学",
+      "en": "Name analysis",
+      "required": [
+        { "key": "name", "label": "姓名用字" },
+        { "key": "strokes", "label": "笔画依据" },
+        { "key": "element", "label": "五行归类或字义" }
+      ],
+      "optional": ["出生信息", "性别", "英文名对照"]
+    },
+    {
+      "id": "zeri",
+      "label": "择日",
+      "en": "Auspicious date selection",
+      "required": [
+        { "key": "matter", "label": "所办事项" },
+        { "key": "window", "label": "日期范围" }
+      ],
+      "optional": ["主事人属相或八字", "忌避条件", "地点与参与者"]
+    }
+  ]
+}

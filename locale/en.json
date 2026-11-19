@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Suanming reading assistant",
+    "description": "Interprets supplied Zi Wei Dou Shu, BaZi, Liu Yao, Qi Men, Feng Shui, Tarot, astrology, name and date-selection material. Adds a suanming skill and a suanming_intake check tool: it only reads what you paste, never casts a chart or invents stars, hexagrams, cards or positions, asks for missing data first, and answers in the seven-section structure with a boundary note."
+  }
+}
