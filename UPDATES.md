@@ -34,6 +34,7 @@
 | 007 | 2026-11-19 22:39 | 0.1.0 | npm / bash / curl | meta | 将 0.1.0 发布到 npm（首次发布走 staged 处理，约 4 分钟后生效）；独立目录安装验证通过 | `UPDATES.md` | `npm view` 版本与元数据正确；`npm i` 后 `import` 成功 |
 | 008 | 2026-11-19 22:44 | 0.1.1 | plugin_manager / bash / edit / npm / git | docs | 定位「ENOENT …/suanming/locale」为 profile 残留旧目录链接，非包缺陷；补本地链接安装的风险说明，发布 0.1.1 | `README.md`、`README.zh.md`、`CHANGELOG.md`、`package.json`、`UPDATES.md` | `list_bundles` 无 error；30 个测试通过；npm 0.1.1 与 tag `v0.1.1` |
 | 009 | 2026-11-19 23:02 | 0.2.0 | write / edit / bash / node / npm / git | feat | 落地前三项精度升级（覆盖率、结构校验、零历法推演、交付前自检）并加设置面板 | `lib/derive.js`、`lib/audit.js`、`lib/data.js`、`lib/config.js`、`lib/settings.js`、`lib/intake.js`、`lib/tool.js`、`index.js`、`assets/cosmogram.md`、两份 README、`CHANGELOG.md`、`package.json`、`test/*`、`UPDATES.md` | 47 个测试通过；`npm run check` 通过 |
+| 010 | 2026-11-19 23:15 | 0.2.0 | plugin_manager / bash / node | fix | 定位「ENOENT …/suanming/index.js」为宿主进程缓存的旧模块解析，磁盘已无旧路径；toggle 复现，需重启宿主清除缓存 | `UPDATES.md` | `require.resolve` 指向 profile 内 0.2.0；`set_bundle` 激活仍报旧路径 |
 
 ### 001 · 2026-11-19 21:45 · 整理为可发布目录（v0.1.0 基线）
 
@@ -287,6 +288,32 @@ GitHub Actions 的 `CI` 工作流在最近两次 push 上均为 `completed / suc
 - `npm pack --dry-run`：24 个文件，8 个 `lib` 模块全部在包内
 - npm：`latest` 已指向 `0.2.0`；临时目录安装后 `Config` 可加载（`function`），设置 schema 有效
 - GitHub：commit `9a8a33e`，tag `v0.2.0`
+
+### 010 · 2026-11-19 23:15 · 旧模块路径仍被宿主缓存
+
+**现象**
+
+插件页仍显示 `包元信息错误：Plugin metadata for dsh-cosmogram: Error: ENOENT: no such file or directory, scandir '/Users/sujingyi/Documents/deepseek-harness/suanming/locale'`。用 `plugin_manager` 关闭再启用该 bundle 时，激活返回：
+
+```
+cosmogram (dsh-cosmogram): failed to import: Error: ENOENT: no such file or directory, open '/Users/sujingyi/Documents/deepseek-harness/suanming/index.js'
+```
+
+**排查**
+
+| 检查 | 结果 |
+| --- | --- |
+| profile 依赖 | `dsh-cosmogram: ^0.2.0` |
+| `pnpm-lock.yaml` | `dsh-cosmogram@0.2.0` |
+| `node_modules/dsh-cosmogram` | 真实目录，`package.json` 版本 `0.2.0` |
+| 全盘 grep `suanming`（排除 node_modules） | 只剩 `CHANGELOG.md` 的一句历史说明，无任何配置引用 |
+| 新 Node 进程 `require.resolve('dsh-cosmogram', { paths: [profile] })` | 正确指向 `profiles/desktop/node_modules/dsh-cosmogram/index.js` |
+
+**结论**：磁盘上已经没有任何旧路径。报错来自**宿主进程内部缓存的模块解析**——早期以 `link:/Users/.../suanming` 安装时，进程记录了该解析结果，之后即使依赖被替换成 registry 版本，运行中的加载器仍复用它，HMR 也清不掉。
+
+**处理**：toggle 已复现并定位到缓存层，磁盘无解。**需要完全退出并重启 DSH**（不是刷新页面），新进程会按 profile 重新解析到 0.2.0。
+
+**若重启后仍失败**：用 `remove_bundle` 移除后重新 `install_bundle target: dsh-cosmogram@0.2.0`，再不行则检查 `node_modules/.modules.yaml` 与锁文件是否残留。
 
 ---
 
