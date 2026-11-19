@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] - 2026-11-19
+
+### Added
+
+- **Session tab `命盘`.** A client view in the conversation tab strip that shows the plugin's runtime state (version, enabled, tools, settings file) and edits the four settings in place: `strictness`, `coverageThreshold`, `showFacts`, `auditMode`. Saving applies immediately and persists to `cosmogram.settings.json` in the profile; **恢复默认** clears it.
+- **Host route `/__cosmogram/api`.** `state`, `save` and `reset` for the tab. It is registered only when the host exposes `webServer`, so a host without the web layer still loads the plugin.
+
+### Changed
+
+- Settings precedence is now: defaults → bundle config → values saved from the session tab.
+
 ## [0.2.0] - 2026-11-19
 
 ### Added

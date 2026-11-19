@@ -46,6 +46,12 @@
 | `showFacts` | `true` | 是否在校验结果里附上推演要点。关闭可省 token。 |
 | `auditMode` | `warn` | `off` 不提示；`warn` 只报告问题；`strict` 要求高优先级问题清零。 |
 
+### 会话标签「命盘」
+
+插件还会在对话标签栏加一个 **命盘** 标签：显示当前版本、两个已注册的工具、设置文件路径，并把上面四项做成可编辑控件。**保存设置** 立即生效并写入 profile 下的 `cosmogram.settings.json`；**恢复默认** 清除该文件。设置优先级为：默认值 → bundle 配置 → 标签里保存的值。
+
+标签在前端，安装或更新后需要刷新页面（或重启应用）才会出现。
+
 ## 各体系最低数据要求
 
 | 体系 | 最少需要 |
@@ -130,12 +136,15 @@ npm run check   # 逐个模块语法检查
 
 ```
 index.js              插件入口：注册技能与两个工具、应用设置
+client.js             前端：会话标签「命盘」
 lib/intake.js         校验、覆盖率、结构性问题、骨架生成
 lib/derive.js         零历法推演（八字、星盘相位）
 lib/audit.js          交付前的正文自检
 lib/data.js           查表数据（干支、五行、相位、词汇表）
 lib/config.js         由 DSH 渲染的设置 schema
 lib/settings.js       运行时设置存储
+lib/store.js          标签页设置的落盘读写
+lib/routes.js         /__cosmogram/api（state / save / reset）
 lib/tool.js           cosmogram_intake 与 cosmogram_audit 定义
 lib/skill.js          cosmogram 技能注册
 assets/cosmogram.md    技能正文（解读契约）

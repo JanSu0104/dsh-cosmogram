@@ -35,6 +35,7 @@
 | 008 | 2026-11-19 22:44 | 0.1.1 | plugin_manager / bash / edit / npm / git | docs | 定位「ENOENT …/suanming/locale」为 profile 残留旧目录链接，非包缺陷；补本地链接安装的风险说明，发布 0.1.1 | `README.md`、`README.zh.md`、`CHANGELOG.md`、`package.json`、`UPDATES.md` | `list_bundles` 无 error；30 个测试通过；npm 0.1.1 与 tag `v0.1.1` |
 | 009 | 2026-11-19 23:02 | 0.2.0 | write / edit / bash / node / npm / git | feat | 落地前三项精度升级（覆盖率、结构校验、零历法推演、交付前自检）并加设置面板 | `lib/derive.js`、`lib/audit.js`、`lib/data.js`、`lib/config.js`、`lib/settings.js`、`lib/intake.js`、`lib/tool.js`、`index.js`、`assets/cosmogram.md`、两份 README、`CHANGELOG.md`、`package.json`、`test/*`、`UPDATES.md` | 47 个测试通过；`npm run check` 通过 |
 | 010 | 2026-11-19 23:15 | 0.2.0 | plugin_manager / bash / node | fix | 定位「ENOENT …/suanming/index.js」为宿主进程缓存的旧模块解析，磁盘已无旧路径；toggle 复现，需重启宿主清除缓存 | `UPDATES.md` | `require.resolve` 指向 profile 内 0.2.0；`set_bundle` 激活仍报旧路径 |
+| 011 | 2026-11-19 23:30 | 0.3.0 | write / edit / bash / node / npm / git | feat | 新增会话标签「命盘」：显示运行状态并就地调整四项设置；宿主新增 `/__cosmogram/api`（state/save/reset） | `client.js`、`lib/routes.js`、`lib/store.js`、`index.js`、`package.json`、两份 README、`CHANGELOG.md`、`UPDATES.md` | 47 个测试通过；`node --check` 通过 |
 
 ### 001 · 2026-11-19 21:45 · 整理为可发布目录（v0.1.0 基线）
 
@@ -314,6 +315,32 @@ cosmogram (dsh-cosmogram): failed to import: Error: ENOENT: no such file or dire
 **处理**：toggle 已复现并定位到缓存层，磁盘无解。**需要完全退出并重启 DSH**（不是刷新页面），新进程会按 profile 重新解析到 0.2.0。
 
 **若重启后仍失败**：用 `remove_bundle` 移除后重新 `install_bundle target: dsh-cosmogram@0.2.0`，再不行则检查 `node_modules/.modules.yaml` 与锁文件是否残留。
+
+### 011 · 2026-11-19 23:30 · 会话标签「命盘」
+
+**目标**：在对话标题栏的标签条（`对话 / 免费模型 / …`）里加一个属于本插件的标签，能看运行状态、能改设置。
+
+**实现**
+
+| 文件 | 作用 |
+| --- | --- |
+| `client.js` | 注册 `conversation.view`（id `dsh-cosmogram`，label `命盘`，order 8）；面板读 `/__cosmogram/api`，提供四项控件、保存与恢复默认 |
+| `lib/routes.js` | 宿主路由 `/__cosmogram/api`：`state` / `save` / `reset`；仅在宿主提供 `webServer` 时注册 |
+| `lib/store.js` | 设置落盘到 profile 下的 `cosmogram.settings.json` |
+| `index.js` | 设置优先级：默认值 ← bundle 配置 ← 标签保存值；启动时注册路由 |
+| `package.json` | `exports["./client"]`、`dsh.client = { platform: "web", immediately: true }` |
+
+**边界**
+
+- 前端标签属于 Client half，安装/更新后需要刷新页面或重启宿主才出现。
+- 不写 profile 清单，不改 DSH 自己的配置层；设置只落在插件自己的 JSON 文件里。
+- 标签里的“已启用”来自宿主能否加载本插件，不是另做一套状态机。
+
+**校验**
+
+- `node --check`：`client.js`、`lib/routes.js`、`lib/store.js` 通过
+- `npm test`：47 个测试通过
+- `npm pack --dry-run`：确认 `client.js` 与新增模块在包内
 
 ---
 

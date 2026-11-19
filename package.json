@@ -1,6 +1,6 @@
 {
   "name": "dsh-cosmogram",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Traditional Chinese metaphysics and divination reading assistant for DeepSeek Harness: interprets user-supplied charts across nine systems, never casts them.",
   "type": "module",
   "license": "MIT",
@@ -21,7 +21,8 @@
     ".": "./index.js",
     "./package.json": "./package.json",
     "./locale/*.json": "./locale/*.json",
-    "./icon": "./icon.svg"
+    "./icon": "./icon.svg",
+    "./client": "./client.js"
   },
   "icon": "./icon.svg",
   "files": [
@@ -36,11 +37,19 @@
     "README.md",
     "README.zh.md",
     "CHANGELOG.md",
-    "LICENSE"
+    "LICENSE",
+    "client.js"
   ],
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-conversation"
+      ]
     }
   },
   "keywords": [

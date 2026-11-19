@@ -127,12 +127,15 @@ npm run check   # syntax check of every runtime module
 
 ```
 index.js              plugin entry: registers skill + both tools, applies settings
+client.js             Client half: the 命盘 session tab
 lib/intake.js         validation, coverage, structural checks, scaffold
 lib/derive.js         zero-calendar derivation (BaZi, chart aspects)
 lib/audit.js          post-draft check against the supplied material
 lib/data.js           reference tables (stems, branches, aspects, vocabularies)
 lib/config.js         settings schema rendered by DSH
 lib/settings.js       runtime settings store
+lib/store.js          settings file persistence for the tab
+lib/routes.js         /__cosmogram/api (state / save / reset)
 lib/tool.js           cosmogram_intake and cosmogram_audit definitions
 lib/skill.js          cosmogram skill registration
 assets/cosmogram.md   skill body (the reading contract)
@@ -154,6 +157,12 @@ The bundle declares a configuration schema, so DSH renders a settings form for i
 | `coverageThreshold` | `60` | Coverage line for `lenient`, 0–100. |
 | `showFacts` | `true` | Attach derived facts to the intake result. Turn off to save tokens. |
 | `auditMode` | `warn` | `off` reports nothing, `warn` reports findings, `strict` treats high-severity findings as a failed check. |
+
+### Session tab
+
+The plugin also adds a **命盘** tab beside the conversation. It shows the running version, the two registered tools, the settings file path, and the same four settings as editable controls. **保存设置** applies immediately and persists to `cosmogram.settings.json` in the profile; **恢复默认** clears it. Settings resolve as defaults → bundle config → values saved from this tab.
+
+The tab lives in the Client half, so installing or updating the bundle needs a page refresh (or an app restart) before it appears.
 
 ### Adding a system
 
