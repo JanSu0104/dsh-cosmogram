@@ -66,6 +66,8 @@ The bundle is a dependency-free, Host-only plugin: `index.js`, a patch, locales,
 
 A local directory install links this checkout, so edits show up after the plugin reloads. It changes the profile, so it affects every session in that profile; remove the bundle to undo it.
 
+**A linked install breaks when the folder moves.** The plugin manager reads `locale/` and the patch from that path, so moving or deleting the checkout makes the row fail with `Plugin metadata … ENOENT …/locale`. Use the registry install for normal use; if you develop locally and move the folder, remove the bundle and install again instead of remapping it.
+
 ### Use it
 
 ```

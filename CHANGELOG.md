@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.1.1] - 2026-11-19
+
+### Fixed
+
+- A local-directory install is a symlink: moving or deleting the checkout makes the plugin manager fail with `Plugin metadata … ENOENT …/locale`. Both READMEs now state the risk, name the symptom, and point to the registry install as the normal path and to reinstall (not remapping) as the remedy.
+- The published tarball now ships `CHANGELOG.md`.
+
 ## [0.1.0] - 2026-11-19
 
 First release as **Cosmogram**.

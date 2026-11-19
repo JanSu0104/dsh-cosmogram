@@ -32,6 +32,7 @@
 | 005 | 2026-11-19 22:16 | 0.1.0 | bash / git / curl | meta | 首次推送到 GitHub：force 覆盖网页上传的旧快照，补齐隐藏文件与完整提交历史 | 远端 `main`（26 文件、8 提交） | `.gitignore` 与 `ci.yml` 均 200；远端 HEAD 与本地一致 |
 | 006 | 2026-11-19 22:20 | 0.1.0 | curl / bash / git | meta | 设置仓库 topics（11 个）；确认 GitHub Actions 两次运行均成功 | 仓库设置、`UPDATES.md` | CI：success ×2 |
 | 007 | 2026-11-19 22:39 | 0.1.0 | npm / bash / curl | meta | 将 0.1.0 发布到 npm（首次发布走 staged 处理，约 4 分钟后生效）；独立目录安装验证通过 | `UPDATES.md` | `npm view` 版本与元数据正确；`npm i` 后 `import` 成功 |
+| 008 | 2026-11-19 22:44 | 0.1.1 | plugin_manager / bash / edit / npm / git | docs | 定位「ENOENT …/suanming/locale」为 profile 残留旧目录链接，非包缺陷；补本地链接安装的风险说明，发布 0.1.1 | `README.md`、`README.zh.md`、`CHANGELOG.md`、`package.json`、`UPDATES.md` | `list_bundles` 无 error；30 个测试通过；npm 0.1.1 与 tag `v0.1.1` |
 
 ### 001 · 2026-11-19 21:45 · 整理为可发布目录（v0.1.0 基线）
 
@@ -231,6 +232,35 @@ GitHub Actions 的 `CI` 工作流在最近两次 push 上均为 `completed / suc
 
 - `0.0.0-stage` 占位版本仍在。`npm deprecate` 同样要求 2FA 授权，本次未完成，留待下次一并处理（它不会被 `npm i dsh-cosmogram` 装上，但按精确版本仍可安装）。
 - `v0.1.0` 的 git tag 与 GitHub Release 附件尚未创建。
+
+### 008 · 2026-11-19 22:44 · 定位“包元信息错误”并发布 0.1.1
+
+**现象**
+
+插件页报错：`包元信息错误：Plugin metadata for dsh-cosmogram: Error: ENOENT: no such file or directory, scandir '/Users/sujingyi/Documents/deepseek-harness/suanming/locale'`。
+
+**诊断**
+
+| 证据 | 结论 |
+| --- | --- |
+| 报错路径是 `.../deepseek-harness/suanming/`，该目录不存在 | 指向改名前的旧 checkout |
+| `.plugin-manager/logs/*/pnpm.log` 有 `- dsh-cosmogram link:/Users/.../suanming` | profile 曾以**本地目录 link** 方式安装 |
+| `node_modules/dsh-cosmogram` 现为真实目录，`locale/` 内 `en.json`、`zh.json` 齐全 | 报错时读的是旧 link，不是当前包 |
+| `plugin_manager list_bundles` 显示 `version 0.1.0`、`source dsh-cosmogram@^0.1.0`、`enabled`、有 `cosmogram` 行、无 `error` | 重装后已恢复 |
+
+**结论**：不是包缺陷。本地目录安装是软链接，源码目录被移动/删除后，插件管理器从该路径读 `locale/` 失败。
+
+**包侧改动（0.1.1）**
+
+1. 两份 README 的安装段落补“软链接安装会在目录移动后失败”的说明，并给出症状与正确做法（重装，而不是改路径）。
+2. `CHANGELOG.md` 纳入 npm 打包清单。
+3. 版本升到 `0.1.1`。
+
+**校验**
+
+- `plugin_manager list_bundles`：`dsh-cosmogram` 行正常
+- `npm test`：30 个测试通过
+- 发布与推送结果见下一条
 
 ---
 
