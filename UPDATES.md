@@ -28,6 +28,7 @@
 | 001 | 2026-11-19 21:45 | 0.1.0 | bash / edit / write / git / node / npm | chore | 插件项目迁入 `dsh-cosmogram/` 作为唯一发布根，分支改 `main`，忽略打包产物，建立本档案 | 全部（移动）；`.gitignore`；`+UPDATES.md` | 30 个测试通过；`npm run check` 通过；`npm pack --dry-run` 18 files / 92.9 kB |
 | 002 | 2026-11-19 21:57 | 0.1.0 | write / edit / bash / git | docs | README 中英分离：英文版标题、小节、体系名、七段全部英文化并给中文括注；中文版语言切换与发布命令对齐 | `README.md`、`README.zh.md` | 30 个测试通过；两版章节一一对应（各 12 节） |
 | 003 | 2026-11-19 22:05 | 0.1.0 | edit / bash / npm | meta | 增加 `publishConfig`，把发布目标固定为 npmjs 官方源与公开访问，避免本机镜像源导致发布失败 | `package.json`、`UPDATES.md` | 30 个测试通过；`npm publish --dry-run` 通过 |
+| 004 | 2026-11-19 22:10 | 0.1.0 | edit / bash / git / curl | meta | 补 `repository`/`homepage`/`bugs` 指回 GitHub；登记 origin；诊断 GitHub 不可达原因（本地代理 7890 可用，推送缺凭据） | `package.json`、`UPDATES.md` | 30 个测试通过；`git ls-remote` 经代理可连，推送返回 401 待凭据 |
 
 ### 001 · 2026-11-19 21:45 · 整理为可发布目录（v0.1.0 基线）
 
@@ -112,6 +113,49 @@ GitHub 默认展示的是 `README.md`，但它标题是中文「Cosmogram · 命
 - `npm publish --dry-run`：18 files / 92.9 kB，目标 `https://registry.npmjs.org/`
 
 **发布状态**：仍未发布。npm 认证需要账号本人完成（浏览器授权、密码或 OTP），助手侧无法代办；登录成功后 `npm publish` 一条命令即可，随后补记发布条目。
+
+### 004 · 2026-11-19 22:10 · 指向 GitHub 仓库并诊断网络
+
+**背景**
+
+GitHub 仓库已由作者建好：`https://github.com/JanSu0104/dsh-cosmogram`（API 确认：public、空仓库、默认分支 `main`）。浏览器访问该页面超时。
+
+**诊断结果**
+
+| 检查 | 结果 |
+| --- | --- |
+| `api.github.com` | ✅ 200，约 1.2–1.7 s |
+| `github.com` DNS | 解析到 `57.155.223.240`，HTTPS 连接被断开（`Empty reply from server`） |
+| 备用 IP（20.205.243.166 / 20.27.177.113 / 140.82.113.3 / 140.82.114.3） | ❌ 全部超时 |
+| 本机代理 `127.0.0.1:7890` | ✅ 走代理访问 `https://github.com` 返回 200（约 7.5 s） |
+| 已保存的 GitHub 凭据 | ❌ Keychain 中无 github.com 凭据 |
+
+结论：仓库本身正常，超时是**本机到 github.com 的直连被阻断**（DNS 被解析到不可达地址）。走本地代理可以连上；推送还缺凭据。
+
+**用什么工具**
+
+- `edit`：`package.json` 补 `repository`、`homepage`、`bugs`
+- `curl` / `dig` / `nc`：网络与代理诊断
+- `git`：登记 `origin`，尝试推送
+- `npm`：回归测试
+
+**改了什么**
+
+```json
+"repository": { "type": "git", "url": "git+https://github.com/JanSu0104/dsh-cosmogram.git" },
+"homepage": "https://github.com/JanSu0104/dsh-cosmogram#readme",
+"bugs": { "url": "https://github.com/JanSu0104/dsh-cosmogram/issues" }
+```
+
+`origin` 已登记为 `https://github.com/JanSu0104/dsh-cosmogram.git`。
+
+**校验**
+
+- `npm test`：30 个测试通过
+- 经代理 `git ls-remote` 可读到远端（空仓库），直连失败
+- 推送因缺少 GitHub 凭据未完成（`GIT_TERMINAL_PROMPT=0` 下无法询问用户名/PAT）
+
+**下一步**：作者提供 PAT 或在本机存入凭据后，`git push -u origin main` 即可；无需改动代码。
 
 ---
 

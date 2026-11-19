@@ -4,6 +4,14 @@
   "description": "Traditional Chinese metaphysics and divination reading assistant for DeepSeek Harness: interprets user-supplied charts across nine systems, never casts them.",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JanSu0104/dsh-cosmogram.git"
+  },
+  "homepage": "https://github.com/JanSu0104/dsh-cosmogram#readme",
+  "bugs": {
+    "url": "https://github.com/JanSu0104/dsh-cosmogram/issues"
+  },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"
