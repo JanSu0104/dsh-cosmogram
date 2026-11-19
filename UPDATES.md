@@ -284,7 +284,9 @@ GitHub Actions 的 `CI` 工作流在最近两次 push 上均为 `completed / suc
 
 - `node --check`：9 个运行时模块通过
 - `npm test`：47 个测试通过（新增 ten gods、旬空、相位、覆盖率、结构问题、自检）
-- `npm pack --dry-run`：确认新模块全部在包内
+- `npm pack --dry-run`：24 个文件，8 个 `lib` 模块全部在包内
+- npm：`latest` 已指向 `0.2.0`；临时目录安装后 `Config` 可加载（`function`），设置 schema 有效
+- GitHub：commit `9a8a33e`，tag `v0.2.0`
 
 ---
 
