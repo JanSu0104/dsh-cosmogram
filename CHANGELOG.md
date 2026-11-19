@@ -2,6 +2,21 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.2.0] - 2026-11-19
+
+### Added
+
+- **Coverage scoring.** `cosmogram_intake` now returns a 0–100 `coverage` score and per-system `coverageBySystem`, so "how complete is this material" is a number instead of a yes/no.
+- **Structural checks.** `issues` reports contradictions the keyword check cannot see: an hour pillar that disagrees with the stated clock time, four transformations without a birth-year stem, a moving line without a changed hexagram, a Qi Men board with a ju number but no yin/yang dun, a natal chart with an Ascendant but no houses, tarot cards without orientation.
+- **Zero-calendar derivation.** The intake result carries a `facts` block computed from the pasted material only: BaZi ten gods, hidden stems, weighted five elements, clashes, combinations and void branches; chart aspects from longitudes, plus element and mode distribution. No calendar, no solar terms, no ephemeris, no chart casting.
+- **`cosmogram_audit` tool.** A post-draft check that compares the answer with the supplied material: seven sections, absolute wording, professional boundaries for sensitive topics, and stars / palaces / stem-branches / cards / degrees that the input does not contain. It ignores negated mentions so a reader can still say what is absent.
+- **Settings.** The bundle declares a configuration schema, so DSH renders an adjustable form: `strictness` (strict / balanced / lenient), `coverageThreshold`, `showFacts`, `auditMode` (off / warn / strict).
+- **Readable reports.** Tool output renders a coverage bar, per-system scores, derived-fact tables and an audit table with severity.
+
+### Changed
+
+- The test suite grows from 30 to 47 cases, covering ten gods, void branches, aspects, coverage, structural checks and the audit.
+
 ## [0.1.1] - 2026-11-19
 
 ### Fixed

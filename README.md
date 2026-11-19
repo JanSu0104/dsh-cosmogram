@@ -8,7 +8,7 @@ It covers nine systems: **Zi Wei Dou Shu (紫微斗数) · BaZi / Four Pillars (
 
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](package.json)
-[![tests](https://img.shields.io/badge/tests-30%20passing-brightgreen.svg)](test/)
+[![tests](https://img.shields.io/badge/tests-47%20passing-brightgreen.svg)](test/)
 
 ---
 
@@ -24,17 +24,20 @@ A reading assistant, not a chart generator. It interprets chart material you alr
 | Give probabilities, boundaries and follow-up directions | Use absolutes such as "注定 / 一定 / 必发" (destined / certainly / bound to happen) |
 | Add medical, legal, investment, psychological and marriage boundaries | Replace professional advice |
 
-## Two capabilities in the DSH bundle
+## Three capabilities in the DSH bundle
 
 1. **`cosmogram` skill** — loaded only when a reading is requested. It carries the reading contract, the seven-section output structure, the interpretation order for all nine systems, term-to-plain-language notes, tone rules and safety boundaries.
 2. **`cosmogram_intake` tool** — a deterministic pre-check. Give it the pasted chart material; it returns:
-   - `status: ready | need_data`;
+   - `status: ready | need_data` and a `coverage` score (0–100) per system;
    - which minimum elements are present and which are missing;
+   - structural problems the keyword check alone cannot see — an hour pillar that contradicts the stated clock time, four transformations without a birth-year stem, moving lines without a changed hexagram;
    - the exact follow-up questions to ask (never a guessed chart);
+   - **derived facts the material already fixes**: BaZi ten gods, hidden stems, element weights, clashes, combinations and void branches; chart aspects and element/mode distribution — all from the pasted positions, with no calendar or ephemeris;
    - the seven-section answer skeleton;
    - boundary reminders triggered by the topic (health, legal, investment, psychology, marriage).
+3. **`cosmogram_audit` tool** — the post-draft check. It compares the written answer with the supplied material and flags a missing section, absolute wording, a sensitive topic without a professional boundary, and any star, palace, stem-branch, card or degree the answer cites that the input does not contain. High-severity findings must be fixed before delivery.
 
-The tool contains no astrology: it is a checklist plus template builder, so it cannot fabricate.
+The tools contain no astrology: they are checklists, lookup tables and templates, so they cannot fabricate a chart.
 
 ## Supported systems and minimum data
 
@@ -123,18 +126,34 @@ npm run check   # syntax check of every runtime module
 ```
 
 ```
-index.js              plugin entry: registers skill + tool
-lib/intake.js         dependency-free validation, detection, scaffold
-lib/tool.js           cosmogram_intake tool definition
+index.js              plugin entry: registers skill + both tools, applies settings
+lib/intake.js         validation, coverage, structural checks, scaffold
+lib/derive.js         zero-calendar derivation (BaZi, chart aspects)
+lib/audit.js          post-draft check against the supplied material
+lib/data.js           reference tables (stems, branches, aspects, vocabularies)
+lib/config.js         settings schema rendered by DSH
+lib/settings.js       runtime settings store
+lib/tool.js           cosmogram_intake and cosmogram_audit definitions
 lib/skill.js          cosmogram skill registration
 assets/cosmogram.md   skill body (the reading contract)
 references/           per-system guide, output examples, safety rules
 prompts/              portable prompt pack for other communities
-test/                 30 tests: intake logic, manifest, registration
+test/                 47 tests: intake, coverage, derivation, audit, manifest
 cordis.patch.yml      bundle patch
 locale/{en,zh}.json   Plugin Manager title/description
 icon.svg              original artwork (three-line trigram inside a ring)
 ```
+
+### Settings
+
+The bundle declares a configuration schema, so DSH renders a settings form for it (Plugins → the plugin's configuration, or Settings → plugin configuration on hosts that still have it):
+
+| Setting | Default | Effect |
+| --- | --- | --- |
+| `strictness` | `balanced` | `strict` requires every minimum element; `balanced` allows a limited reading with the gaps stated; `lenient` allows a reading once coverage reaches the threshold. |
+| `coverageThreshold` | `60` | Coverage line for `lenient`, 0–100. |
+| `showFacts` | `true` | Attach derived facts to the intake result. Turn off to save tokens. |
+| `auditMode` | `warn` | `off` reports nothing, `warn` reports findings, `strict` treats high-severity findings as a failed check. |
 
 ### Adding a system
 

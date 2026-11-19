@@ -33,6 +33,7 @@
 | 006 | 2026-11-19 22:20 | 0.1.0 | curl / bash / git | meta | 设置仓库 topics（11 个）；确认 GitHub Actions 两次运行均成功 | 仓库设置、`UPDATES.md` | CI：success ×2 |
 | 007 | 2026-11-19 22:39 | 0.1.0 | npm / bash / curl | meta | 将 0.1.0 发布到 npm（首次发布走 staged 处理，约 4 分钟后生效）；独立目录安装验证通过 | `UPDATES.md` | `npm view` 版本与元数据正确；`npm i` 后 `import` 成功 |
 | 008 | 2026-11-19 22:44 | 0.1.1 | plugin_manager / bash / edit / npm / git | docs | 定位「ENOENT …/suanming/locale」为 profile 残留旧目录链接，非包缺陷；补本地链接安装的风险说明，发布 0.1.1 | `README.md`、`README.zh.md`、`CHANGELOG.md`、`package.json`、`UPDATES.md` | `list_bundles` 无 error；30 个测试通过；npm 0.1.1 与 tag `v0.1.1` |
+| 009 | 2026-11-19 23:02 | 0.2.0 | write / edit / bash / node / npm / git | feat | 落地前三项精度升级（覆盖率、结构校验、零历法推演、交付前自检）并加设置面板 | `lib/derive.js`、`lib/audit.js`、`lib/data.js`、`lib/config.js`、`lib/settings.js`、`lib/intake.js`、`lib/tool.js`、`index.js`、`assets/cosmogram.md`、两份 README、`CHANGELOG.md`、`package.json`、`test/*`、`UPDATES.md` | 47 个测试通过；`npm run check` 通过 |
 
 ### 001 · 2026-11-19 21:45 · 整理为可发布目录（v0.1.0 基线）
 
@@ -263,6 +264,27 @@ GitHub Actions 的 `CI` 工作流在最近两次 push 上均为 `completed / suc
 - npm：`latest` 已指向 `0.1.1`（19 个文件），临时目录安装后版本与 `CHANGELOG.md` 均正确
 - GitHub：commit `8ae6b14`，tag `v0.1.1`
 - 遗留：`0.0.0-stage` 占位版的 `npm deprecate` 仍被 2FA 拦截（`EOTP`），需要下一次授权时处理
+
+### 009 · 2026-11-19 23:02 · 精度升级与可调设置（0.2.0）
+
+**目标**：落地此前评估中性价比最高的三项，并把设置做成可调。
+
+| 方案 | 实现 |
+| --- | --- |
+| A 结构化校验 + 覆盖率 | `lib/intake.js` 输出 `coverage`、`coverageBySystem`、`issues`；新增 `consistencyIssues()` 检查时辰与时柱矛盾、四化缺生年干、动爻无变卦、局数缺阴阳遁、上升缺宫位、牌名缺正逆位 |
+| B 输出侧防编造审计 | 新工具 `cosmogram_audit`（`lib/audit.js`）：七段齐全、绝对化用词、敏感主题边界、未溯源的星曜/宫位/干支/牌名/度数、未替换占位符；否定式提及（“未见天梁”）不算编造 |
+| C 零历法推演 | `lib/derive.js` + `lib/data.js`：八字十神、藏干、加权五行、冲合、旬空；星盘相位、元素与模式分布。只读用户已给的盘面，不碰历法、节气、星历 |
+| 可视化设置 | `lib/config.js` 声明 schema，`lib/settings.js` 保存运行时值；DSH 据此渲染设置表单：`strictness`、`coverageThreshold`、`showFacts`、`auditMode` |
+
+**渲染**：校验结果带覆盖率条与分体系分数、推演表格；自检结果按高/中/低列出问题；设置项由宿主表单呈现，不需要额外前端代码。
+
+**边界**：推演结果全部来自输入，属于“查表算术”，不是排盘；紫微飞星、六爻纳甲变卦、塔罗牌位表尚未实现，文档中明确写为首批范围。
+
+**校验**
+
+- `node --check`：9 个运行时模块通过
+- `npm test`：47 个测试通过（新增 ten gods、旬空、相位、覆盖率、结构问题、自检）
+- `npm pack --dry-run`：确认新模块全部在包内
 
 ---
 
