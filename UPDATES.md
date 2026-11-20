@@ -39,6 +39,7 @@
 | 012 | 2026-11-19 23:35 | 0.3.1 | write / edit / bash / node / npm | fix | 修复「命盘」标签出现但内容空白：改为 `slots.inject` 注册、先渲染标题、加错误边界与客户端错误日志 | `client.js`、`lib/routes.js`、`package.json`、`CHANGELOG.md`、`UPDATES.md` | 47 个测试通过；`node --check` 通过 |
 | 013 | 2026-11-19 23:45 | 0.3.2 | write / bash / node / npm / git | fix | 定位空白根因：`conversation.view` 的第二个参数是组件而非工厂；改为直接传 `CosmogramPanel` | `client.js`、`package.json`、`CHANGELOG.md`、`UPDATES.md` | 47 个测试通过；宿主源码核对 `register(opts, ChatFlow)` 形式 |
 | 014 | 2026-11-20 08:46 | 0.3.3 | edit / bash / node / npm / git | fix | 修复推演层把两个同支（亥亥）误判为冲与合；改为跳过同支、按集合精确配对 | `lib/derive.js`、`test/derive.test.js`、`package.json`、`CHANGELOG.md`、`UPDATES.md` | 49 个测试通过（新增 2 条回归） |
+| 015 | 2026-11-20 21:41 | 0.4.0 | write / edit / bash / node / npm / git | feat | 新增 `cosmogram_cast`：只给出生信息时经本机回环网关排盘，再交 intake 解读；加入 gatewayUrl/Timeout 设置与隐私白名单 | `lib/gateway.js`、`lib/tool.js`、`lib/settings.js`、`lib/config.js`、`index.js`、`client.js`、`assets/cosmogram.md`、两份 README、`CHANGELOG.md`、`test/*`、`UPDATES.md` | 55 个测试通过；`npm run check` 通过 |
 
 ### 001 · 2026-11-19 21:45 · 整理为可发布目录（v0.1.0 基线）
 
@@ -434,3 +435,28 @@ ctx.slots.register({ name: 'settings.general.item', id: 'language', ... }, Langu
 - npm `0.3.3` 上线，`latest` 指向它
 - profile：`remove_bundle` → `install_bundle dsh-cosmogram@0.3.3`，`application: applied`
 - 用同一张盘重跑 `cosmogram_intake`：推演里不再出现「亥亥冲、亥亥合」，只剩日主、十神、五行、旬空四项
+
+### 015 · 2026-11-20 21:41 · 排盘网关接入（0.4.0）
+
+**目标**：用户只给出生信息时，先由本机开源库排盘，再交 cosmogram 解读；插件自身永不排盘。
+
+**实现**
+
+| 文件 | 作用 |
+| --- | --- |
+| `lib/gateway.js` | `POST /calculate` 客户端；只接受 127.0.0.1/localhost/::1；返回体按白名单重建；超时与不可达返回固定话术 |
+| `lib/tool.js` | 新工具 `cosmogram_cast`（system/birthDate/birthTime/gender/location/calendar/useTrueSolarTime/question/library） |
+| `lib/settings.js`、`lib/config.js` | `gatewayUrl`、`gatewayTimeoutMs` |
+| `client.js` | 面板显示网关地址并可编辑；工具数改为 3 |
+| `assets/cosmogram.md` | 工作流改为“先确认盘从哪来”；固定话术换成网关版 |
+
+**隐私约束**
+
+- 非回环地址在本地直接拒绝，不发出请求；
+- 出生字段只进请求体，不回显、不缓存、不落盘；
+- 网关失败不兜底到外部网站或第三方 API。
+
+**校验**
+
+- `npm test`：55 个测试通过（新增 gateway 6 条：回环校验、成功净化、外部拒绝、不可达、非法返回、map 摊平）
+- `npm run check`：10 个模块通过

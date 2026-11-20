@@ -19,12 +19,12 @@ function fakeContext() {
   }
 }
 
-test('apply registers one model-invocable skill and two tools', () => {
+test('apply registers one model-invocable skill and three tools', () => {
   const fake = fakeContext()
   apply(fake.ctx)
   assert.equal(fake.skills.length, 1)
-  assert.equal(fake.tools.length, 2)
-  assert.deepEqual(fake.tools.map(tool => tool.name), ['cosmogram_intake', 'cosmogram_audit'])
+  assert.equal(fake.tools.length, 3)
+  assert.deepEqual(fake.tools.map(tool => tool.name), ['cosmogram_intake', 'cosmogram_audit', 'cosmogram_cast'])
 
   const [skill] = fake.skills
   assert.equal(skill.name, 'cosmogram')

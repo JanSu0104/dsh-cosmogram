@@ -48,7 +48,7 @@ test('the skill body states the non-fabrication rules and the request sentence',
   const body = read('assets/cosmogram.md')
   assert.match(body, /不排盘/)
   assert.match(body, /不编造|自造数据/)
-  assert.match(body, /请提供具体命盘、卦象、牌阵或星盘信息/)
+  assert.match(body, /当前缺少排盘数据。请提供你使用的开源库、排盘返回 JSON，或启动本地排盘网关。/)
   assert.match(body, /七段式/)
 })
 

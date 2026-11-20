@@ -2,6 +2,23 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] - 2026-11-20
+
+### Added
+
+- **`cosmogram_cast`.** When the user supplies only birth information, the plugin asks a chart gateway on the same machine (`POST /calculate`, default `http://127.0.0.1:8000`) for a structured chart, then passes the flattened `material` to `cosmogram_intake`. Default libraries: `iztro` for Zi Wei, `mingyu-core` for BaZi / Liu Yao / Qi Men / date selection, `opastro` for astrology, a local deck for Tarot, rule functions for Feng Shui and name analysis; a user-specified library is passed through.
+- **Gateway settings.** `gatewayUrl` and `gatewayTimeoutMs`; the session tab shows the gateway address and lets you edit it.
+
+### Changed
+
+- The skill now starts with "where does the chart come from": pasted chart → straight to validation; birth info only → cast through the local gateway; gateway down → stop and ask the user to start it.
+- The fixed no-data reply is now the gateway-aware sentence, and the seven sections must name the source library in section 1.
+
+### Security
+
+- Only loopback gateway URLs are accepted; anything else is refused before a request is made, with no external fallback.
+- Birth fields are sent once and never echoed, cached, logged or written to disk; the tool result is rebuilt from an allow-list of `chart`, `source`, `warnings` and `disclaimer`.
+
 ## [0.3.3] - 2026-11-20
 
 ### Fixed

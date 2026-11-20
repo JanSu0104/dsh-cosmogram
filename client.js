@@ -139,7 +139,7 @@ window.__ModuleLoader__.load({
           h('span', { style: { opacity: 0.62 } }, '插件'),
           h('span', null, state.name),
           h('span', { style: { opacity: 0.62 } }, '状态'),
-          h('span', null, '已启用 · 技能 1 · 工具 2（intake / audit）'),
+          h('span', null, '已启用 · 技能 1 · 工具 3（intake / audit / cast）'),
           h('span', { style: { opacity: 0.62 } }, '设置文件'),
           h('span', { style: { fontFamily: 'ui-monospace, monospace', fontSize: 11, opacity: 0.8, wordBreak: 'break-all' } }, state.settingsPath))) : null,
 
@@ -168,6 +168,13 @@ window.__ModuleLoader__.load({
               onChange: function (event) { setDraft({ ...draft, showFacts: event.target.checked }) },
             }),
             h('span', null, draft.showFacts ? '已开启' : '已关闭'))),
+
+        h(Field, { title: '排盘网关', hint: '只接受本机回环地址；出生信息只发到这里' },
+          h('input', {
+            type: 'text', style: { ...INPUT, width: 240 },
+            value: draft.gatewayUrl || '',
+            onChange: function (event) { setDraft({ ...draft, gatewayUrl: event.target.value }) },
+          })),
 
         h(Field, { title: '交付前自检', hint: '七段、绝对化用词、边界、未溯源实体' },
           h('select', {

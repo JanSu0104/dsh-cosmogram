@@ -1,6 +1,6 @@
 {
   "name": "dsh-cosmogram",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "description": "Traditional Chinese metaphysics and divination reading assistant for DeepSeek Harness: interprets user-supplied charts across nine systems, never casts them.",
   "type": "module",
   "license": "MIT",
@@ -70,7 +70,7 @@
   ],
   "scripts": {
     "test": "node --test test/*.test.js",
-    "check": "node --check index.js && node --check lib/intake.js && node --check lib/tool.js && node --check lib/skill.js && node --check lib/derive.js && node --check lib/audit.js && node --check lib/data.js && node --check lib/config.js && node --check lib/settings.js"
+    "check": "node --check index.js && node --check lib/intake.js && node --check lib/tool.js && node --check lib/skill.js && node --check lib/derive.js && node --check lib/audit.js && node --check lib/data.js && node --check lib/config.js && node --check lib/settings.js && node --check lib/gateway.js"
   },
   "engines": {
     "node": ">=20"

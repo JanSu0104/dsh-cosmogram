@@ -11,6 +11,9 @@
  *   returns the answer skeleton plus the exact follow-up questions;
  * - a `cosmogram_audit` tool that checks a drafted answer against the supplied
  *   material before it is delivered;
+ * - a `cosmogram_cast` tool that asks a loopback chart gateway for a structured
+ *   chart when the user supplies only birth information. The plugin itself
+ *   never casts a chart;
  * - a session tab (Client half) that shows the plugin's runtime state and lets
  *   the user change its settings in place.
  *
@@ -20,7 +23,7 @@
  */
 
 import { registerCosmogramSkill } from './lib/skill.js'
-import { registerIntakeTool, registerAuditTool } from './lib/tool.js'
+import { registerIntakeTool, registerAuditTool, registerCastTool } from './lib/tool.js'
 import { DEFAULTS, setSettings } from './lib/settings.js'
 import { loadStored } from './lib/store.js'
 import { registerRoutes } from './lib/routes.js'
@@ -45,5 +48,6 @@ export function apply(ctx, config) {
   registerCosmogramSkill(ctx)
   registerIntakeTool(ctx)
   registerAuditTool(ctx)
+  registerCastTool(ctx)
   registerRoutes(ctx)
 }

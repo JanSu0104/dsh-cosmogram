@@ -8,7 +8,7 @@ It covers nine systems: **Zi Wei Dou Shu (紫微斗数) · BaZi / Four Pillars (
 
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](package.json)
-[![tests](https://img.shields.io/badge/tests-49%20passing-brightgreen.svg)](test/)
+[![tests](https://img.shields.io/badge/tests-55%20passing-brightgreen.svg)](test/)
 
 ---
 
@@ -24,10 +24,11 @@ A reading assistant, not a chart generator. It interprets chart material you alr
 | Give probabilities, boundaries and follow-up directions | Use absolutes such as "注定 / 一定 / 必发" (destined / certainly / bound to happen) |
 | Add medical, legal, investment, psychological and marriage boundaries | Replace professional advice |
 
-## Three capabilities in the DSH bundle
+## Four capabilities in the DSH bundle
 
 1. **`cosmogram` skill** — loaded only when a reading is requested. It carries the reading contract, the seven-section output structure, the interpretation order for all nine systems, term-to-plain-language notes, tone rules and safety boundaries.
-2. **`cosmogram_intake` tool** — a deterministic pre-check. Give it the pasted chart material; it returns:
+2. **`cosmogram_cast` tool** — asks a **loopback chart gateway** (default `http://127.0.0.1:8000`, `POST /calculate`) for a structured chart when the user supplies only birth information. It never casts a chart itself, refuses any non-local gateway URL before sending anything, and returns only the chart, its source library and warnings — birth fields are sent once and never echoed, logged or stored. If the gateway is down it stops and tells the user to start it, instead of falling back to a website or third-party API.
+3. **`cosmogram_intake` tool** — a deterministic pre-check. Give it the pasted chart material; it returns:
    - `status: ready | need_data` and a `coverage` score (0–100) per system;
    - which minimum elements are present and which are missing;
    - structural problems the keyword check alone cannot see — an hour pillar that contradicts the stated clock time, four transformations without a birth-year stem, moving lines without a changed hexagram;
@@ -35,7 +36,7 @@ A reading assistant, not a chart generator. It interprets chart material you alr
    - **derived facts the material already fixes**: BaZi ten gods, hidden stems, element weights, clashes, combinations and void branches; chart aspects and element/mode distribution — all from the pasted positions, with no calendar or ephemeris;
    - the seven-section answer skeleton;
    - boundary reminders triggered by the topic (health, legal, investment, psychology, marriage).
-3. **`cosmogram_audit` tool** — the post-draft check. It compares the written answer with the supplied material and flags a missing section, absolute wording, a sensitive topic without a professional boundary, and any star, palace, stem-branch, card or degree the answer cites that the input does not contain. High-severity findings must be fixed before delivery.
+4. **`cosmogram_audit` tool** — the post-draft check. It compares the written answer with the supplied material and flags a missing section, absolute wording, a sensitive topic without a professional boundary, and any star, palace, stem-branch, card or degree the answer cites that the input does not contain. High-severity findings must be fixed before delivery.
 
 The tools contain no astrology: they are checklists, lookup tables and templates, so they cannot fabricate a chart.
 
@@ -132,6 +133,7 @@ lib/intake.js         validation, coverage, structural checks, scaffold
 lib/derive.js         zero-calendar derivation (BaZi, chart aspects)
 lib/audit.js          post-draft check against the supplied material
 lib/data.js           reference tables (stems, branches, aspects, vocabularies)
+lib/gateway.js        loopback chart-gateway client (privacy allow-list)
 lib/config.js         settings schema rendered by DSH
 lib/settings.js       runtime settings store
 lib/store.js          settings file persistence for the tab
@@ -141,7 +143,7 @@ lib/skill.js          cosmogram skill registration
 assets/cosmogram.md   skill body (the reading contract)
 references/           per-system guide, output examples, safety rules
 prompts/              portable prompt pack for other communities
-test/                 49 tests: intake, coverage, derivation, audit, manifest
+test/                 55 tests: intake, coverage, derivation, audit, gateway, manifest
 cordis.patch.yml      bundle patch
 locale/{en,zh}.json   Plugin Manager title/description
 icon.svg              original artwork (three-line trigram inside a ring)
@@ -157,6 +159,28 @@ The bundle declares a configuration schema, so DSH renders a settings form for i
 | `coverageThreshold` | `60` | Coverage line for `lenient`, 0–100. |
 | `showFacts` | `true` | Attach derived facts to the intake result. Turn off to save tokens. |
 | `auditMode` | `warn` | `off` reports nothing, `warn` reports findings, `strict` treats high-severity findings as a failed check. |
+| `gatewayUrl` | `http://127.0.0.1:8000` | Local chart gateway. Non-loopback addresses are refused before any request. |
+| `gatewayTimeoutMs` | `10000` | Gateway timeout in milliseconds. |
+
+### Local chart gateway
+
+When the user gives only birth information, the plugin asks a gateway on the same machine for a structured chart:
+
+```
+POST /calculate
+{ "system": "ziwei", "birthDate": "1995-08-16", "birthTime": "14:30",
+  "gender": "female", "location": "北京", "calendar": "solar",
+  "useTrueSolarTime": false, "question": "事业" }
+```
+
+The default library per system is: Zi Wei `iztro`; BaZi, Liu Yao, Qi Men and date selection `mingyu-core`; astrology `opastro`; Tarot a local deck; Feng Shui and name analysis rule functions. A user-specified library is passed through as `library`.
+
+Privacy and failure rules:
+
+- only `127.0.0.1` / `localhost` / `::1` is accepted; any other host is rejected locally;
+- no external site, commercial app or cloud API is ever used as a fallback;
+- birth fields are not written to disk, not cached and not included in the tool result;
+- if the gateway is unreachable, the tool returns the fixed reply asking the user to start it, and the reading stops there.
 
 ### Session tab
 
