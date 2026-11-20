@@ -460,3 +460,9 @@ ctx.slots.register({ name: 'settings.general.item', id: 'language', ... }, Langu
 
 - `npm test`：55 个测试通过（新增 gateway 6 条：回环校验、成功净化、外部拒绝、不可达、非法返回、map 摊平）
 - `npm run check`：10 个模块通过
+
+**发布与验证**
+
+- npm `0.4.0` 上线；profile 已换成 0.4.0（`application: applied`），工具列表出现 `cosmogram_cast`
+- 网关未启动时实测：返回 `gateway-unreachable`，并原样给出固定话术；没有请求外部地址
+- 工具返回里不含 `2008-01-04`、`北京` 等出生字段
