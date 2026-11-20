@@ -428,3 +428,9 @@ ctx.slots.register({ name: 'settings.general.item', id: 'language', ... }, Langu
 **修复**：同支直接跳过；配对改为集合相等（正向或反向），真实冲合仍只报一次。
 
 **回归测试**：新增两条——同支不产生关系；`子午冲` 与 `寅亥合` 各出现一次。测试总数 47 → 49。
+
+**发布与验证**
+
+- npm `0.3.3` 上线，`latest` 指向它
+- profile：`remove_bundle` → `install_bundle dsh-cosmogram@0.3.3`，`application: applied`
+- 用同一张盘重跑 `cosmogram_intake`：推演里不再出现「亥亥冲、亥亥合」，只剩日主、十神、五行、旬空四项
