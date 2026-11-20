@@ -37,6 +37,8 @@
 | 010 | 2026-11-19 23:15 | 0.2.0 | plugin_manager / bash / node | fix | 定位「ENOENT …/suanming/index.js」为宿主进程缓存的旧模块解析，磁盘已无旧路径；toggle 复现，需重启宿主清除缓存 | `UPDATES.md` | `require.resolve` 指向 profile 内 0.2.0；`set_bundle` 激活仍报旧路径 |
 | 011 | 2026-11-19 23:30 | 0.3.0 | write / edit / bash / node / npm / git | feat | 新增会话标签「命盘」：显示运行状态并就地调整四项设置；宿主新增 `/__cosmogram/api`（state/save/reset） | `client.js`、`lib/routes.js`、`lib/store.js`、`index.js`、`package.json`、两份 README、`CHANGELOG.md`、`UPDATES.md` | 47 个测试通过；`node --check` 通过 |
 | 012 | 2026-11-19 23:35 | 0.3.1 | write / edit / bash / node / npm | fix | 修复「命盘」标签出现但内容空白：改为 `slots.inject` 注册、先渲染标题、加错误边界与客户端错误日志 | `client.js`、`lib/routes.js`、`package.json`、`CHANGELOG.md`、`UPDATES.md` | 47 个测试通过；`node --check` 通过 |
+| 013 | 2026-11-19 23:45 | 0.3.2 | write / bash / node / npm / git | fix | 定位空白根因：`conversation.view` 的第二个参数是组件而非工厂；改为直接传 `CosmogramPanel` | `client.js`、`package.json`、`CHANGELOG.md`、`UPDATES.md` | 47 个测试通过；宿主源码核对 `register(opts, ChatFlow)` 形式 |
+| 014 | 2026-11-20 08:46 | 0.3.3 | edit / bash / node / npm / git | fix | 修复推演层把两个同支（亥亥）误判为冲与合；改为跳过同支、按集合精确配对 | `lib/derive.js`、`test/derive.test.js`、`package.json`、`CHANGELOG.md`、`UPDATES.md` | 49 个测试通过（新增 2 条回归） |
 
 ### 001 · 2026-11-19 21:45 · 整理为可发布目录（v0.1.0 基线）
 
@@ -405,3 +407,24 @@ cosmogram (dsh-cosmogram): failed to import: Error: ENOENT: no such file or dire
 - [ ] 仓库加 `dsh-plugin`、`deepseek-harness` 等 topics
 - [ ] `npm publish`（`publishConfig` 已就位，只差 `npm login`）
 - [ ] 可选：提交 awesome-dsh-plugin 收录（要求仓库创建满 1 天）
+
+### 013 · 2026-11-19 23:45 · 「命盘」空白根因
+
+**结论**：`conversation.view` 的 `slots.register(options, Component)` 第二个参数是**组件**，不是返回组件的工厂。之前在宿主安装包里核对到它自己的注册：
+
+```js
+ctx.slots.register({ name: 'conversation.view', id: 'chat', ... }, ChatFlow)
+ctx.slots.register({ name: 'settings.general.item', id: 'language', ... }, LanguageRow)
+```
+
+工厂写法会让 React 把函数当子节点，既不报错也不渲染，正好对应「标签在、内容空、日志无异常」。
+
+**改动**：`client.js` 改为直接注册 `CosmogramPanel` 组件；组件内部仍保留错误边界与客户端日志。
+
+### 014 · 2026-11-20 08:46 · 冲合误判修复
+
+**问题**：`deriveBazi` 用 `item.includes(a) && item.includes(b)` 判断冲合。两个同支（亥、亥）会命中 `巳亥冲` 与 `寅亥合`，输出「亥亥冲、亥亥合」。
+
+**修复**：同支直接跳过；配对改为集合相等（正向或反向），真实冲合仍只报一次。
+
+**回归测试**：新增两条——同支不产生关系；`子午冲` 与 `寅亥合` 各出现一次。测试总数 47 → 49。

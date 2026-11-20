@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.3.3] - 2026-11-20
+
+### Fixed
+
+- The derivation layer treated two identical branches as both a clash and a combination: the pair matcher used `includes`, so `亥` paired with `亥` through `巳亥` and `寅亥`. Identical branches are now skipped and pairs are compared as exact sets, so a real `子午冲` or `寅亥合` is still reported exactly once. Two regression tests cover both directions (49 tests total).
+
+## [0.3.2] - 2026-11-19
+
+### Fixed
+
+- The **命盘** tab still rendered an empty body because `conversation.view` takes a component, not a factory that returns one. The panel now registers `CosmogramPanel` directly, the same shape the host uses for its own `chat` and `language` tabs.
+
 ## [0.3.1] - 2026-11-19
 
 ### Fixed

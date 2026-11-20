@@ -44,6 +44,19 @@ test('bazi facts carry ten gods, elements, clashes and voids', () => {
   assert.deepEqual(facts.voidBranches, ['子', '丑'])
 })
 
+test('two identical branches are not a clash or a combination', () => {
+  const facts = deriveBazi(parsePillars('年柱丁亥 月柱壬子 日柱癸卯 时柱癸亥'))
+  assert.equal(facts.relations.some(item => item.startsWith('亥亥')), false)
+  assert.equal(facts.relations.length, 0)
+})
+
+test('a real clash and a real combination are still reported once', () => {
+  const facts = deriveBazi(parsePillars('年柱甲寅 月柱丙子 日柱戊午 时柱辛亥'))
+  assert.ok(facts.relations.includes('子午冲'))
+  assert.ok(facts.relations.includes('寅亥合'))
+  assert.equal(facts.relations.filter(item => item === '子午冲').length, 1)
+})
+
 test('astrology positions and aspects derive from degrees', () => {
   const points = parseAstro('太阳 15° 白羊，月亮 15° 天秤，水星 16° 白羊')
   assert.equal(points.length, 3)

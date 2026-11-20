@@ -150,7 +150,7 @@ lib/skill.js          cosmogram 技能注册
 assets/cosmogram.md    技能正文（解读契约）
 references/           分体系解读要点、输出范例、安全规则
 prompts/              给其他社区用的通用提示词与规范
-test/                 47 个测试：校验、覆盖率、推演、自检、清单、注册
+test/                 49 个测试：校验、覆盖率、推演、自检、清单、注册
 cordis.patch.yml      bundle 补丁
 locale/{en,zh}.json   插件管理器的标题与描述
 icon.svg              原创图标（圆盘内三爻）

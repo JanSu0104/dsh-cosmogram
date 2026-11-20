@@ -8,7 +8,7 @@ It covers nine systems: **Zi Wei Dou Shu (紫微斗数) · BaZi / Four Pillars (
 
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](package.json)
-[![tests](https://img.shields.io/badge/tests-47%20passing-brightgreen.svg)](test/)
+[![tests](https://img.shields.io/badge/tests-49%20passing-brightgreen.svg)](test/)
 
 ---
 
@@ -141,7 +141,7 @@ lib/skill.js          cosmogram skill registration
 assets/cosmogram.md   skill body (the reading contract)
 references/           per-system guide, output examples, safety rules
 prompts/              portable prompt pack for other communities
-test/                 47 tests: intake, coverage, derivation, audit, manifest
+test/                 49 tests: intake, coverage, derivation, audit, manifest
 cordis.patch.yml      bundle patch
 locale/{en,zh}.json   Plugin Manager title/description
 icon.svg              original artwork (three-line trigram inside a ring)
